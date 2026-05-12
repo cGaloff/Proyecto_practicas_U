@@ -12,7 +12,7 @@ using PPI.Api.Infrastructure.Persistence;
 namespace PPI.Api.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260512023505_InitialCreate")]
+    [Migration("20260512031212_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -29,29 +29,36 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("Correo")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("correo");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en");
 
                     b.Property<string>("NombreCompleto")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("nombre_completo");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_admins");
 
                     b.HasIndex("Correo")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_admins_correo");
 
                     b.ToTable("admins", (string)null);
                 });
@@ -60,44 +67,55 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("Correo")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("correo");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en");
 
                     b.Property<bool>("EsAuxiliar")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasDefaultValue(false)
+                        .HasColumnName("es_auxiliar");
 
                     b.Property<string>("NombreCompleto")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("nombre_completo");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
 
                     b.Property<bool>("PrimerLogin")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasDefaultValue(true)
+                        .HasColumnName("primer_login");
 
                     b.Property<Guid>("ProgramaId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("programa_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_docentes");
 
                     b.HasIndex("Correo")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_docentes_correo");
 
-                    b.HasIndex("ProgramaId");
+                    b.HasIndex("ProgramaId")
+                        .HasDatabaseName("ix_docentes_programa_id");
 
                     b.ToTable("docentes", (string)null);
                 });
@@ -106,47 +124,60 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en");
 
                     b.Property<string>("EnlaceEvidencias")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("enlace_evidencias");
 
                     b.Property<DateTime?>("EnviadoEn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("enviado_en");
 
                     b.Property<string>("Estado")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
-                        .HasDefaultValue("SinIniciar");
+                        .HasDefaultValue("SinIniciar")
+                        .HasColumnName("estado");
 
                     b.Property<string>("FirmaDigital")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("firma_digital");
 
                     b.Property<Guid>("GrupoAsignadoId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("grupo_asignado_id");
 
                     b.Property<DateTime?>("GuardadoEn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("guardado_en");
 
                     b.Property<Guid>("InformeId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("informe_id");
 
                     b.Property<string>("ObservacionAdmin")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("observacion_admin");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_entradas_informe");
 
                     b.HasIndex("GrupoAsignadoId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_entradas_informe_grupo_asignado_id");
 
-                    b.HasIndex("InformeId");
+                    b.HasIndex("InformeId")
+                        .HasDatabaseName("ix_entradas_informe_informe_id");
 
                     b.ToTable("entradas_informe", (string)null);
                 });
@@ -155,39 +186,50 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<int>("Anio")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("anio");
 
                     b.Property<Guid>("DocenteId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("docente_id");
 
                     b.Property<int>("Matriculados")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("matriculados");
 
                     b.Property<int>("NumeroGrupo")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("numero_grupo");
 
                     b.Property<string>("Practica")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("practica");
 
                     b.Property<Guid>("ProgramaId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("programa_id");
 
                     b.Property<string>("Semestre")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("semestre");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_grupos_asignados");
 
-                    b.HasIndex("ProgramaId");
+                    b.HasIndex("ProgramaId")
+                        .HasDatabaseName("ix_grupos_asignados_programa_id");
 
                     b.HasIndex("DocenteId", "Practica", "NumeroGrupo", "Semestre", "Anio")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_grupos_asignados_docente_id_practica_numero_grupo_semestre_");
 
                     b.ToTable("grupos_asignados", (string)null);
                 });
@@ -196,43 +238,54 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("ActualizadoEn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("actualizado_en");
 
                     b.Property<int>("Anio")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("anio");
 
                     b.Property<string>("CoordinadorNombre")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("coordinador_nombre");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en");
 
                     b.Property<string>("Estado")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
-                        .HasDefaultValue("Pendiente");
+                        .HasDefaultValue("Pendiente")
+                        .HasColumnName("estado");
 
                     b.Property<DateOnly?>("FechaEntrega")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_entrega");
 
                     b.Property<Guid>("ProgramaId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("programa_id");
 
                     b.Property<string>("Semestre")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("semestre");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_informes");
 
                     b.HasIndex("ProgramaId", "Semestre", "Anio")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_informes_programa_id_semestre_anio");
 
                     b.ToTable("informes", (string)null);
                 });
@@ -241,36 +294,46 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid>("AdminId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("admin_id");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creado_en");
 
                     b.Property<string>("EstadoAnterior")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("estado_anterior");
 
                     b.Property<string>("EstadoNuevo")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("estado_nuevo");
 
                     b.Property<Guid>("InformeId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("informe_id");
 
                     b.Property<string>("Observacion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("observacion");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_informe_auditorias");
 
-                    b.HasIndex("AdminId");
+                    b.HasIndex("AdminId")
+                        .HasDatabaseName("ix_informe_auditorias_admin_id");
 
-                    b.HasIndex("InformeId");
+                    b.HasIndex("InformeId")
+                        .HasDatabaseName("ix_informe_auditorias_informe_id");
 
                     b.ToTable("informe_auditorias", (string)null);
                 });
@@ -279,22 +342,27 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("Codigo")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("codigo");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("nombre");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_programas");
 
                     b.HasIndex("Codigo")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_programas_codigo");
 
                     b.ToTable("programas", (string)null);
                 });
@@ -305,7 +373,8 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                         .WithMany("Docentes")
                         .HasForeignKey("ProgramaId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_docentes_programas_programa_id");
 
                     b.Navigation("Programa");
                 });
@@ -316,13 +385,15 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                         .WithOne("EntradaInforme")
                         .HasForeignKey("PPI.Api.Domain.Entities.EntradaInforme", "GrupoAsignadoId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_entradas_informe_grupos_asignados_grupo_asignado_id");
 
                     b.HasOne("PPI.Api.Domain.Entities.Informe", "Informe")
                         .WithMany("Entradas")
                         .HasForeignKey("InformeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_entradas_informe_informes_informe_id");
 
                     b.OwnsOne("PPI.Api.Domain.Entities.Seccion2B", "Seccion2B", b1 =>
                         {
@@ -351,10 +422,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                             b1.ToTable("entradas_informe");
 
-                            b1.ToJson("Seccion2B");
+                            b1.ToJson("seccion2b");
 
                             b1.WithOwner()
-                                .HasForeignKey("EntradaInformeId");
+                                .HasForeignKey("EntradaInformeId")
+                                .HasConstraintName("fk_entradas_informe_entradas_informe_id");
                         });
 
                     b.OwnsOne("PPI.Api.Domain.Entities.Seccion3", "Seccion3", b1 =>
@@ -381,10 +453,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                             b1.ToTable("entradas_informe");
 
-                            b1.ToJson("Seccion3");
+                            b1.ToJson("seccion3");
 
                             b1.WithOwner()
-                                .HasForeignKey("EntradaInformeId");
+                                .HasForeignKey("EntradaInformeId")
+                                .HasConstraintName("fk_entradas_informe_entradas_informe_id");
                         });
 
                     b.OwnsOne("PPI.Api.Domain.Entities.Seccion4A", "Seccion4A", b1 =>
@@ -396,10 +469,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                             b1.ToTable("entradas_informe");
 
-                            b1.ToJson("Seccion4A");
+                            b1.ToJson("seccion4a");
 
                             b1.WithOwner()
-                                .HasForeignKey("EntradaInformeId");
+                                .HasForeignKey("EntradaInformeId")
+                                .HasConstraintName("fk_entradas_informe_entradas_informe_id");
 
                             b1.OwnsOne("PPI.Api.Domain.Entities.ActividadItem", "ClasesEspejo", b2 =>
                                 {
@@ -417,8 +491,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                                     b2.ToTable("entradas_informe");
 
+                                    b2.ToJson("seccion4a");
+
                                     b2.WithOwner()
-                                        .HasForeignKey("Seccion4AEntradaInformeId");
+                                        .HasForeignKey("Seccion4AEntradaInformeId")
+                                        .HasConstraintName("fk_entradas_informe_entradas_informe_seccion4a_entrada_informe_id");
                                 });
 
                             b1.OwnsOne("PPI.Api.Domain.Entities.ActividadItem", "EventosAcademicos", b2 =>
@@ -437,8 +514,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                                     b2.ToTable("entradas_informe");
 
+                                    b2.ToJson("seccion4a");
+
                                     b2.WithOwner()
-                                        .HasForeignKey("Seccion4AEntradaInformeId");
+                                        .HasForeignKey("Seccion4AEntradaInformeId")
+                                        .HasConstraintName("fk_entradas_informe_entradas_informe_seccion4a_entrada_informe_id");
                                 });
 
                             b1.OwnsOne("PPI.Api.Domain.Entities.ActividadItem", "SalidasCampo", b2 =>
@@ -457,8 +537,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                                     b2.ToTable("entradas_informe");
 
+                                    b2.ToJson("seccion4a");
+
                                     b2.WithOwner()
-                                        .HasForeignKey("Seccion4AEntradaInformeId");
+                                        .HasForeignKey("Seccion4AEntradaInformeId")
+                                        .HasConstraintName("fk_entradas_informe_entradas_informe_seccion4a_entrada_informe_id");
                                 });
 
                             b1.Navigation("ClasesEspejo")
@@ -492,10 +575,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                             b1.ToTable("entradas_informe");
 
-                            b1.ToJson("Seccion4B");
+                            b1.ToJson("seccion4b");
 
                             b1.WithOwner()
-                                .HasForeignKey("EntradaInformeId");
+                                .HasForeignKey("EntradaInformeId")
+                                .HasConstraintName("fk_entradas_informe_entradas_informe_id");
                         });
 
                     b.OwnsOne("PPI.Api.Domain.Entities.Seccion5A", "Seccion5A", b1 =>
@@ -515,10 +599,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                             b1.ToTable("entradas_informe");
 
-                            b1.ToJson("Seccion5A");
+                            b1.ToJson("seccion5a");
 
                             b1.WithOwner()
-                                .HasForeignKey("EntradaInformeId");
+                                .HasForeignKey("EntradaInformeId")
+                                .HasConstraintName("fk_entradas_informe_entradas_informe_id");
                         });
 
                     b.OwnsOne("PPI.Api.Domain.Entities.Seccion5B", "Seccion5B", b1 =>
@@ -538,10 +623,11 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
 
                             b1.ToTable("entradas_informe");
 
-                            b1.ToJson("Seccion5B");
+                            b1.ToJson("seccion5b");
 
                             b1.WithOwner()
-                                .HasForeignKey("EntradaInformeId");
+                                .HasForeignKey("EntradaInformeId")
+                                .HasConstraintName("fk_entradas_informe_entradas_informe_id");
                         });
 
                     b.Navigation("GrupoAsignado");
@@ -567,13 +653,15 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                         .WithMany("GruposAsignados")
                         .HasForeignKey("DocenteId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_grupos_asignados_docentes_docente_id");
 
                     b.HasOne("PPI.Api.Domain.Entities.Programa", "Programa")
                         .WithMany("GruposAsignados")
                         .HasForeignKey("ProgramaId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_grupos_asignados_programas_programa_id");
 
                     b.Navigation("Docente");
 
@@ -586,7 +674,8 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                         .WithMany("Informes")
                         .HasForeignKey("ProgramaId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_informes_programas_programa_id");
 
                     b.Navigation("Programa");
                 });
@@ -597,13 +686,15 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                         .WithMany("Auditorias")
                         .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_informe_auditorias_admins_admin_id");
 
                     b.HasOne("PPI.Api.Domain.Entities.Informe", "Informe")
                         .WithMany("Auditorias")
                         .HasForeignKey("InformeId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_informe_auditorias_informes_informe_id");
 
                     b.Navigation("Admin");
 

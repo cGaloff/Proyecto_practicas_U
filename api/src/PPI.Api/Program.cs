@@ -8,6 +8,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("Default"),
         npgsql => npgsql.MigrationsAssembly("PPI.Api")
     )
+    .UseSnakeCaseNamingConvention()
 );
 
 builder.Services.AddEndpointsApiExplorer();
@@ -15,6 +16,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+    await DatabaseSeeder.SeedAsync(db);
+}
 
 if (app.Environment.IsDevelopment())
 {
