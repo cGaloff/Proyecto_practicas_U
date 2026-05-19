@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PPI.Api.Application.Auth;
+using PPI.Api.Application.Word;
 using PPI.Api.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,9 @@ builder.Services.Configure<JwtSettings>(
 // ── Auth services ──────────────────────────────────────────
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<IPasswordService, PasswordService>();
+
+// ── Word generation ────────────────────────────────────────
+builder.Services.AddScoped<IWordGeneratorService, WordGeneratorService>();
 
 // ── JWT Bearer authentication ──────────────────────────────
 var jwtSecret = builder.Configuration["Jwt:Secret"]

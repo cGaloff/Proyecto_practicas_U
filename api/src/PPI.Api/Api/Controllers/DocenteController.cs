@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PPI.Api.Application.Auth;
 using PPI.Api.Application.Docente;
+using PPI.Api.Application.Word;
 using PPI.Api.Domain.Entities;
 using PPI.Api.Domain.Enums;
 using PPI.Api.Infrastructure.Persistence;
@@ -313,6 +314,73 @@ public class DocenteController(AppDbContext db) : ControllerBase
                       $"Práctica {entrada.GrupoAsignado.Practica} · " +
                       $"Grupo {entrada.GrupoAsignado.NumeroGrupo}."
         });
+    }
+
+    // ── GET /api/docente/entradas/{id}/descargar ──────────────
+    /// <summary>
+    /// Genera y descarga el .docx del informe individual del docente.
+    /// Solo contiene las filas de ese grupo específico.
+    /// Solo accesible si la entrada está en estado Enviado.
+    /// </summary>
+    [HttpGet("entradas/{id:guid}/descargar")]
+    [ProducesResponseType(typeof(FileContentResult), 200)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(409)]
+    public async Task<IActionResult> Descargar(
+        Guid id,
+        [FromServices] IWordGeneratorService wordService)
+    {
+        var docenteId = GetDocenteId();
+        if (docenteId == null) return Unauthorized();
+
+        var entrada = await db.EntradasInforme
+            .Include(e => e.GrupoAsignado)
+                .ThenInclude(g => g.Docente)
+                    .ThenInclude(d => d.Programa)
+            .Include(e => e.GrupoAsignado)
+                .ThenInclude(g => g.Programa)
+            .Include(e => e.Informe)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (entrada == null)
+            return NotFound(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "Entrada no encontrada."
+            });
+
+        if (entrada.GrupoAsignado.DocenteId != docenteId)
+            return StatusCode(403, new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "No tienes permiso para descargar esta entrada."
+            });
+
+        if (entrada.Estado != EstadoEntrada.Enviado)
+            return Conflict(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "Solo se puede descargar una entrada enviada."
+            });
+
+        var bytes = await wordService.GenerarAsync(
+            programa:     entrada.GrupoAsignado.Programa.Nombre,
+            semestre:     entrada.Informe.Semestre,
+            coordinador:  entrada.Informe.CoordinadorNombre,
+            fechaEntrega: entrada.Informe.FechaEntrega,
+            entradas:     [entrada]);
+
+        var practica  = entrada.GrupoAsignado.Practica;
+        var grupo     = entrada.GrupoAsignado.NumeroGrupo;
+        var docNombre = entrada.GrupoAsignado.Docente.NombreCompleto
+            .Replace(" ", "_").ToLower();
+        var fileName  = $"informe_PPI_{practica}_grupo{grupo}_{docNombre}.docx";
+
+        return File(
+            bytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            fileName);
     }
 
     // ── Helpers privados ──────────────────────────────────────
