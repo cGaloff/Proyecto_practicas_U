@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PPI.Api.Application.Auth;
 using PPI.Api.Application.Word;
+using PPI.Api.Domain.Entities;
 using PPI.Api.Domain.Enums;
 using PPI.Api.Infrastructure.Persistence;
 
@@ -229,4 +232,185 @@ public class AdminController(AppDbContext db) : ControllerBase
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             fileName);
     }
+
+    // ── GET /api/admin/docentes/{id}/entradas ──────────────────
+    /// <summary>
+    /// Retorna el docente con todas sus entradas para el semestre activo.
+    /// </summary>
+    [HttpGet("docentes/{id:guid}/entradas")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> GetEntradasDocente(Guid id)
+    {
+        var docente = await db.Docentes
+            .Include(d => d.Programa)
+            .Include(d => d.GruposAsignados)
+                .ThenInclude(g => g.EntradaInforme)
+            .FirstOrDefaultAsync(d => d.Id == id);
+
+        if (docente == null)
+            return NotFound(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "Docente no encontrado."
+            });
+
+        var grupos = docente.GruposAsignados
+            .OrderBy(g => g.Practica)
+            .ThenBy(g => g.NumeroGrupo)
+            .Select(g => new
+            {
+                entradaId       = g.EntradaInforme?.Id,
+                practica        = g.Practica,
+                numeroGrupo     = g.NumeroGrupo,
+                matriculados    = g.Matriculados,
+                estado          = g.EntradaInforme?.Estado.ToString() ?? "SinIniciar",
+                guardadoEn      = g.EntradaInforme?.GuardadoEn,
+                enviadoEn       = g.EntradaInforme?.EnviadoEn,
+                observacionAdmin = g.EntradaInforme?.ObservacionAdmin
+            })
+            .ToList();
+
+        return Ok(new
+        {
+            docenteId = docente.Id,
+            nombre    = docente.NombreCompleto,
+            correo    = docente.Correo,
+            programa  = docente.Programa.Nombre,
+            grupos
+        });
+    }
+
+    // ── PUT /api/admin/informes/{id}/estado ────────────────────
+    /// <summary>
+    /// Cambia el estado de un informe consolidado.
+    /// Si el nuevo estado es "Devuelto", la observación es obligatoria
+    /// y se propaga a todas las entradas del informe.
+    /// Registra un evento en la auditoría del informe.
+    /// </summary>
+    [HttpPut("informes/{id:guid}/estado")]
+    [ProducesResponseType(typeof(MensajeResponse), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> CambiarEstado(
+        Guid id,
+        [FromBody] CambiarEstadoRequest req)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        if (!Enum.TryParse<EstadoInforme>(req.NuevoEstado, out var nuevoEstado))
+            return BadRequest(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = $"Estado '{req.NuevoEstado}' no válido."
+            });
+
+        if (nuevoEstado == EstadoInforme.Devuelto &&
+            string.IsNullOrWhiteSpace(req.Observacion))
+            return BadRequest(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "La observación es obligatoria cuando el estado es Devuelto."
+            });
+
+        var adminId = GetAdminId();
+        if (adminId == null) return Unauthorized();
+
+        var informe = await db.Informes
+            .Include(i => i.Entradas)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (informe == null)
+            return NotFound(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "Informe no encontrado."
+            });
+
+        var estadoAnterior = informe.Estado.ToString();
+        informe.Estado       = nuevoEstado;
+        informe.ActualizadoEn = DateTime.UtcNow;
+
+        // Propagar Devuelto a todas las entradas con su observación
+        if (nuevoEstado == EstadoInforme.Devuelto)
+        {
+            foreach (var entrada in informe.Entradas)
+            {
+                entrada.Estado           = EstadoEntrada.Devuelto;
+                entrada.ObservacionAdmin = req.Observacion;
+            }
+        }
+
+        // Registrar auditoría
+        db.InformeAuditorias.Add(new InformeAuditoria
+        {
+            InformeId      = id,
+            AdminId        = adminId.Value,
+            EstadoAnterior = estadoAnterior,
+            EstadoNuevo    = nuevoEstado.ToString(),
+            Observacion    = req.Observacion,
+            CreadoEn       = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync();
+
+        return Ok(new MensajeResponse
+        {
+            Mensaje = $"Estado del informe actualizado: {estadoAnterior} → {nuevoEstado}."
+        });
+    }
+
+    // ── GET /api/admin/informes/{id}/auditoria ─────────────────
+    /// <summary>
+    /// Retorna el historial de cambios de estado del informe,
+    /// ordenado del más reciente al más antiguo.
+    /// </summary>
+    [HttpGet("informes/{id:guid}/auditoria")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> GetAuditoria(Guid id)
+    {
+        var existe = await db.Informes.AnyAsync(i => i.Id == id);
+        if (!existe)
+            return NotFound(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "Informe no encontrado."
+            });
+
+        var auditorias = await db.InformeAuditorias
+            .Include(a => a.Admin)
+            .Where(a => a.InformeId == id)
+            .OrderByDescending(a => a.CreadoEn)
+            .Select(a => new
+            {
+                id             = a.Id,
+                adminNombre    = a.Admin.NombreCompleto,
+                estadoAnterior = a.EstadoAnterior,
+                estadoNuevo    = a.EstadoNuevo,
+                observacion    = a.Observacion,
+                creadoEn       = a.CreadoEn
+            })
+            .ToListAsync();
+
+        return Ok(auditorias);
+    }
+
+    // ── Helper ─────────────────────────────────────────────────
+
+    private Guid? GetAdminId()
+    {
+        var claim = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? User.FindFirstValue("sub");
+        return Guid.TryParse(claim, out var id) ? id : null;
+    }
+}
+
+public class CambiarEstadoRequest
+{
+    [Required]
+    public string NuevoEstado { get; set; } = string.Empty;
+
+    public string? Observacion { get; set; }
 }
