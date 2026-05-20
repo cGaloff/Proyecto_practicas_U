@@ -1,10 +1,34 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Login } from './pages/Login'
+import { ProtectedRoute } from './components/layout/ProtectedRoute'
+import { DocenteLayout } from './components/layout/DocenteLayout'
+import { Dashboard } from './pages/docente/Dashboard'
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-primary">PPI · Prácticas Pedagógicas</h1>
-        <p className="mt-2 text-muted">Universidad del Magdalena — 2026-I</p>
-      </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+
+        <Route element={<ProtectedRoute requiredRole="Docente" />}>
+          <Route element={<DocenteLayout />}>
+            <Route path="/docente" element={<Dashboard />} />
+            <Route path="/docente/historial" element={<PlaceholderPage title="Historial" />} />
+            <Route path="/docente/perfil" element={<PlaceholderPage title="Mi perfil" />} />
+          </Route>
+        </Route>
+
+        <Route path="/" element={<Navigate to="/docente" replace />} />
+        <Route path="*" element={<Navigate to="/docente" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+function PlaceholderPage({ title }: { title: string }) {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-on-surface-variant text-body-md">{title} — próximamente</p>
     </div>
   )
 }

@@ -1,10 +1,6 @@
-export type EstadoEntrada =
-  | 'SinIniciar'
-  | 'Borrador'
-  | 'Enviado'
-  | 'Devuelto'
+export type EstadoEntrada = 'SinIniciar' | 'Borrador' | 'Enviado' | 'Devuelto'
 
-export interface GrupoResumen {
+export interface GrupoConEntradaDto {
   entradaId: string | null
   practica: string
   numeroGrupo: number
@@ -13,23 +9,6 @@ export interface GrupoResumen {
   guardadoEn: string | null
   enviadoEn: string | null
   observacionAdmin: string | null
-}
-
-export interface GruposResponse {
-  grupos: GrupoResumen[]
-}
-
-export interface Actividad {
-  aplica: boolean
-  descripcion: string | null
-}
-
-export interface SeccionEntrada {
-  actividadesDirigidas: Actividad
-  practicaDocente: Actividad
-  ayudantia: Actividad
-  monitorAcademico: Actividad
-  tutorPares: Actividad
 }
 
 export interface EntradaDetalle {
@@ -41,5 +20,4 @@ export interface EntradaDetalle {
   observacionAdmin: string | null
   guardadoEn: string | null
   enviadoEn: string | null
-  seccion2b: SeccionEntrada | null
 }
