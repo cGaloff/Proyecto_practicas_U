@@ -17,6 +17,7 @@ export interface LoginResponse {
 export interface ChangePasswordRequest {
   passwordActual: string
   passwordNuevo: string
+  confirmacionPassword: string
 }
 
 export interface MensajeResponse {
