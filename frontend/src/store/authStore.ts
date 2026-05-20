@@ -1,56 +1,39 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Rol } from '../types/auth'
+import type { LoginResponse } from '../types/auth'
 
 interface AuthState {
   token: string | null
-  nombreCompleto: string | null
-  correo: string | null
-  rol: Rol | null
-  primerLogin: boolean
-  setAuth: (payload: {
-    token: string
-    nombreCompleto: string
-    correo: string
-    rol: Rol
-    primerLogin: boolean
-  }) => void
+  user: Omit<LoginResponse, 'token'> | null
+  isAuthenticated: boolean
+  setAuth: (response: LoginResponse) => void
   clearAuth: () => void
-  setPrimerLogin: (value: boolean) => void
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       token: null,
-      nombreCompleto: null,
-      correo: null,
-      rol: null,
-      primerLogin: false,
-      setAuth: (payload) => {
-        localStorage.setItem('ppi_token', payload.token)
-        set({
-          token: payload.token,
-          nombreCompleto: payload.nombreCompleto,
-          correo: payload.correo,
-          rol: payload.rol,
-          primerLogin: payload.primerLogin,
-        })
+      user: null,
+      isAuthenticated: false,
+
+      setAuth: (response) => {
+        const { token, ...user } = response
+        localStorage.setItem('ppi_token', token)
+        set({ token, user, isAuthenticated: true })
       },
+
       clearAuth: () => {
         localStorage.removeItem('ppi_token')
-        set({ token: null, nombreCompleto: null, correo: null, rol: null, primerLogin: false })
+        set({ token: null, user: null, isAuthenticated: false })
       },
-      setPrimerLogin: (value) => set({ primerLogin: value }),
     }),
     {
-      name: 'ppi_auth',
+      name: 'ppi_user',
       partialize: (state) => ({
         token: state.token,
-        nombreCompleto: state.nombreCompleto,
-        correo: state.correo,
-        rol: state.rol,
-        primerLogin: state.primerLogin,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
       }),
     }
   )
