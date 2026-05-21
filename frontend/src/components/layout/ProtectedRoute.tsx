@@ -1,21 +1,16 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
+import type { LoginResponse } from '../../types/auth'
 
 interface Props {
-  children: React.ReactNode
-  requiredRole?: 'Docente' | 'Admin'
+  requiredRole?: LoginResponse['rol']
 }
 
-export function ProtectedRoute({ children, requiredRole }: Props) {
+export function ProtectedRoute({ requiredRole }: Props) {
   const { isAuthenticated, user } = useAuthStore()
 
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />
-  }
+  if (!isAuthenticated || !user) return <Navigate to="/login" replace />
+  if (requiredRole && user.rol !== requiredRole) return <Navigate to="/login" replace />
 
-  if (requiredRole && user.rol !== requiredRole) {
-    return <Navigate to="/login" replace />
-  }
-
-  return <>{children}</>
+  return <Outlet />
 }

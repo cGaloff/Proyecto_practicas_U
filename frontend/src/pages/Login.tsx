@@ -1,9 +1,7 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { LogIn, Mail, Lock, Eye, EyeOff, ShieldCheck } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { login } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
 
@@ -14,156 +12,75 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-export default function Login() {
+export function Login() {
   const navigate = useNavigate()
-  const { setAuth } = useAuthStore()
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const setAuth = useAuthStore((s) => s.setAuth)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  })
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({ resolver: zodResolver(schema) })
 
   const onSubmit = async (data: FormData) => {
     try {
-      setLoading(true)
-      setError(null)
       const res = await login(data)
       setAuth(res.data)
-
-      if (res.data.rol === 'Admin') {
-        navigate('/admin')
-      } else {
-        navigate('/docente')
-      }
-    } catch (err: any) {
-      const msg = err.response?.data?.mensaje
-        ?? 'Credenciales incorrectas. Intenta de nuevo.'
-      setError(msg)
-    } finally {
-      setLoading(false)
+      navigate(res.data.rol === 'Admin' ? '/admin' : '/docente', { replace: true })
+    } catch {
+      setError('root', { message: 'Correo o contraseña incorrectos.' })
     }
   }
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4">
-
-      {/* Header institucional */}
-      <div className="flex flex-col items-center mb-8">
-        <div className="bg-primary rounded-[8px] w-[80px] h-[80px] flex items-center justify-center mb-4 shadow-card">
-          <LogIn className="text-white" size={40} />
+    <div className="min-h-screen bg-surface flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="mb-8 text-center">
+          <h1 className="text-headline-lg text-on-surface">Portal Académico</h1>
+          <p className="text-body-sm text-on-surface-variant mt-1">Prácticas Pedagógicas · UniMag</p>
         </div>
-        <h1 className="text-[28px] font-bold text-text-main tracking-tight">
-          Iniciar Sesión
-        </h1>
-        <p className="text-text-secondary text-[14px] mt-1">
-          Accede a tu plataforma académica institucional
-        </p>
-      </div>
 
-      {/* Card del formulario */}
-      <div className="bg-white rounded-[12px] shadow-card border border-card-border w-full max-w-[448px] overflow-hidden">
+        <div className="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-sm">
+          <h2 className="text-headline-md text-on-surface mb-6">Iniciar sesión</h2>
 
-        <div className="p-[33px]">
-
-          {error && (
-            <div className="mb-4 bg-danger-bg border border-red-200 rounded-[8px] px-4 py-3 text-danger text-[13px]">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[24px]">
-
-            {/* Campo correo */}
-            <div className="flex flex-col gap-[6px]">
-              <label className="text-[14px] font-medium text-text-main">
-                Correo Institucional
-              </label>
-              <div className="relative">
-                <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-text-muted">
-                  <Mail size={18} />
-                </div>
-                <input
-                  type="email"
-                  placeholder="usuario@universidad.edu"
-                  className={`w-full h-[49px] pl-[41px] pr-[16px] border rounded-[8px] text-[14px] text-text-main bg-surface outline-none transition-all
-                    focus:border-primary focus:ring-2 focus:ring-primary/10
-                    ${errors.correo ? 'border-danger' : 'border-[rgba(194,198,209,0.4)]'}`}
-                  {...register('correo')}
-                />
-              </div>
-              {errors.correo && (
-                <p className="text-[12px] text-danger">{errors.correo.message}</p>
-              )}
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-label-caps text-on-surface-variant uppercase">Correo institucional</label>
+              <input
+                type="email"
+                autoComplete="email"
+                {...register('correo')}
+                className="h-11 px-3 rounded-lg border border-outline-variant bg-surface text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
+              />
+              {errors.correo && <p className="text-xs text-error">{errors.correo.message}</p>}
             </div>
 
-            {/* Campo contraseña */}
-            <div className="flex flex-col gap-[6px]">
-              <label className="text-[14px] font-medium text-text-main">
-                Contraseña
-              </label>
-              <div className="relative">
-                <div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-text-muted">
-                  <Lock size={18} />
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  className={`w-full h-[49px] pl-[41px] pr-[44px] border rounded-[8px] text-[14px] text-text-main bg-white outline-none transition-all
-                    focus:border-primary focus:ring-2 focus:ring-primary/10
-                    ${errors.password ? 'border-danger' : 'border-[rgba(194,198,209,0.4)]'}`}
-                  {...register('password')}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-[12px] top-1/2 -translate-y-1/2 text-text-muted hover:text-text-main transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-[12px] text-danger">{errors.password.message}</p>
-              )}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-label-caps text-on-surface-variant uppercase">Contraseña</label>
+              <input
+                type="password"
+                autoComplete="current-password"
+                {...register('password')}
+                className="h-11 px-3 rounded-lg border border-outline-variant bg-surface text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
+              />
+              {errors.password && <p className="text-xs text-error">{errors.password.message}</p>}
             </div>
 
-            {/* Botón submit */}
+            {errors.root && (
+              <p className="text-sm text-error bg-error/10 px-3 py-2 rounded-lg">{errors.root.message}</p>
+            )}
+
             <button
               type="submit"
-              disabled={loading}
-              className="w-full h-[52px] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-[14px] rounded-[8px] flex items-center justify-center gap-2 transition-colors"
+              disabled={isSubmitting}
+              className="mt-2 h-11 bg-primary text-on-primary font-semibold rounded-lg hover:bg-primary-container transition disabled:opacity-60"
             >
-              {loading ? 'Ingresando...' : (
-                <>
-                  Entrar
-                  <LogIn size={16} />
-                </>
-              )}
+              {isSubmitting ? 'Ingresando…' : 'Ingresar'}
             </button>
-
           </form>
         </div>
-
-        {/* Banner de seguridad */}
-        <div className="bg-[#ecf5fe] border-t border-[rgba(194,198,209,0.3)] px-[33px] py-[16px] flex gap-[12px] items-start">
-          <ShieldCheck className="text-primary shrink-0 mt-0.5" size={16} />
-          <p className="text-[12px] text-text-secondary leading-[1.6]">
-            Esta es una conexión segura. Asegúrate de cerrar tu sesión al
-            finalizar el trabajo en equipos públicos.
-          </p>
-        </div>
       </div>
-
-      {/* Footer institucional */}
-      <footer className="mt-8 text-center">
-        <p className="text-[12px] text-text-muted font-semibold uppercase tracking-wider">
-          ACADEMIC PORTAL
-        </p>
-        <p className="text-[12px] text-text-muted mt-1">
-          © 2026 Universidad del Magdalena. Todos los derechos reservados.
-        </p>
-      </footer>
     </div>
   )
 }

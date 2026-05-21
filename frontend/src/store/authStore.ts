@@ -16,13 +16,11 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       user: null,
       isAuthenticated: false,
-
       setAuth: (response) => {
         const { token, ...user } = response
         localStorage.setItem('ppi_token', token)
         set({ token, user, isAuthenticated: true })
       },
-
       clearAuth: () => {
         localStorage.removeItem('ppi_token')
         set({ token: null, user: null, isAuthenticated: false })
