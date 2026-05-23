@@ -21,3 +21,9 @@ export interface EntradaDetalle {
   guardadoEn: string | null
   enviadoEn: string | null
 }
+
+export type EntradaDetalleDto = EntradaDetalle
+
+export interface GuardarBorradorRequest {
+  [key: string]: unknown
+}

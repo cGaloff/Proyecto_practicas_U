@@ -3,6 +3,7 @@ import { Login } from './pages/Login'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { DocenteLayout } from './components/layout/DocenteLayout'
 import { Dashboard } from './pages/docente/Dashboard'
+import Formulario from './pages/docente/Formulario'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="/docente/historial" element={<PlaceholderPage title="Historial" />} />
             <Route path="/docente/perfil" element={<PlaceholderPage title="Mi perfil" />} />
           </Route>
+          <Route path="/docente/entradas/:entradaId" element={<Formulario />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/docente" replace />} />

@@ -1,5 +1,5 @@
 import client from './client'
-import type { GrupoConEntradaDto, EntradaDetalle } from '../types/docente'
+import type { GrupoConEntradaDto, EntradaDetalle, EntradaDetalleDto, GuardarBorradorRequest } from '../types/docente'
 import type { MensajeResponse } from '../types/auth'
 
 export const getGrupos = () =>
@@ -10,6 +10,11 @@ export const getEntrada = (id: string) =>
 
 export const guardarEntrada = (id: string, body: unknown) =>
   client.put<MensajeResponse>(`/docente/entradas/${id}`, body)
+
+export const guardarBorrador = async (id: string, data: GuardarBorradorRequest) => {
+  await client.put(`/docente/entradas/${id}`, data)
+  return client.get<EntradaDetalleDto>(`/docente/entradas/${id}`)
+}
 
 export const enviarEntrada = (id: string) =>
   client.post<MensajeResponse>(`/docente/entradas/${id}/enviar`)
