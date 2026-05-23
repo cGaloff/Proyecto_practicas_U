@@ -57,9 +57,10 @@ export function Dashboard() {
   }
 
   const accionLabel = (g: GrupoConEntradaDto) => {
-    if (g.estado === 'Enviado') return 'Ver'
-    if (g.estado === 'Borrador' || g.estado === 'Devuelto') return 'Editar'
-    return 'Iniciar'
+    if (g.estado === 'Enviado') return 'Ver →'
+    if (g.estado === 'Borrador') return 'Continuar →'
+    if (g.estado === 'Devuelto') return 'Corregir →'
+    return 'Iniciar →'
   }
 
   if (loading) {
@@ -135,21 +136,17 @@ export function Dashboard() {
                       : '—'}
                   </td>
                   <td className="px-6 py-4">
-                    {g.estado !== 'Enviado' ? (
-                      <button
-                        onClick={() => handleAccion(g)}
-                        className="px-3 py-1.5 bg-primary text-on-primary text-label-caps font-semibold rounded-lg hover:bg-primary-container transition"
-                      >
-                        {accionLabel(g)}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleAccion(g)}
-                        className="px-3 py-1.5 border border-outline-variant text-on-surface-variant text-label-caps font-semibold rounded-lg hover:bg-surface-container transition"
-                      >
-                        Ver
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleAccion(g)}
+                      disabled={!g.entradaId}
+                      className={`px-3 py-1.5 text-label-caps font-semibold rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed ${
+                        g.estado === 'Enviado'
+                          ? 'border border-outline-variant text-on-surface-variant hover:bg-surface-container'
+                          : 'bg-primary text-on-primary hover:bg-primary-container'
+                      }`}
+                    >
+                      {accionLabel(g)}
+                    </button>
                   </td>
                 </tr>
               ))}
