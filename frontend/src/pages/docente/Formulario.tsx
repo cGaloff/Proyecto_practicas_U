@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { FormularioLayout } from '../../components/layout/FormularioLayout'
 import { Seccion1Modalidades } from '../../components/forms/Seccion1Modalidades'
+import { Seccion2Situacion } from '../../components/forms/Seccion2Situacion'
 import { useEntrada } from '../../hooks/useEntrada'
 import { useGrupos } from '../../hooks/useGrupos'
 import { useAuthStore } from '../../store/authStore'
@@ -36,6 +37,10 @@ export default function Formulario() {
     await guardar(data)
     setSeccionesCompletadas((prev) => new Set([...prev, seccionActiva]))
     setSeccionActiva((s) => s + 1)
+  }
+
+  const irAAnterior = () => {
+    setSeccionActiva((s) => s - 1)
   }
 
   const gruposParaSidebar = grupos
@@ -83,7 +88,18 @@ export default function Formulario() {
         />
       )}
 
-      {seccionActiva > 1 && (
+      {seccionActiva === 2 && (
+        <Seccion2Situacion
+          entrada={entradaConDatos}
+          guardando={guardando}
+          guardadoEn={guardadoEn}
+          onGuardar={guardarConDebounce}
+          onSiguiente={irASiguiente}
+          onAnterior={irAAnterior}
+        />
+      )}
+
+      {seccionActiva > 2 && (
         <div className="p-8 text-on-surface-variant">
           Sección {seccionActiva} — en construcción
         </div>
