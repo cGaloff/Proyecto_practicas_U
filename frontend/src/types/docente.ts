@@ -22,8 +22,21 @@ export interface EntradaDetalle {
   enviadoEn: string | null
 }
 
-export type EntradaDetalleDto = EntradaDetalle
+export interface Seccion2BData {
+  publica: number
+  privada: number
+  ongSocial: number
+  vinculacionLaboral: number
+  enCasa: number
+  otrosMunicipios: number
+}
+
+export interface EntradaDetalleDto extends EntradaDetalle {
+  docenteNombre?: string
+  seccion2B?: Seccion2BData | null
+}
 
 export interface GuardarBorradorRequest {
+  seccion2B?: Seccion2BData
   [key: string]: unknown
 }
