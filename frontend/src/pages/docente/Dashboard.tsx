@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-import { Users, CheckCircle, TrendingUp, FileText } from 'lucide-react'
+import { Users, CheckCircle, TrendingUp, FileText, Download } from 'lucide-react'
 import { useGrupos } from '../../hooks/useGrupos'
 import { Badge } from '../../components/ui/Badge'
+import { descargarEntrada } from '../../api/docente'
 import type { GrupoConEntradaDto, EstadoEntrada } from '../../types/docente'
 
 function MetricCard({
@@ -53,7 +54,23 @@ export function Dashboard() {
   const sorted = [...grupos].sort((a, b) => estadoOrder(a.estado) - estadoOrder(b.estado))
 
   const handleAccion = (g: GrupoConEntradaDto) => {
-    if (g.entradaId) navigate(`/docente/entradas/${g.entradaId}`)
+    if (!g.entradaId) return
+    if (g.estado === 'Enviado') {
+      navigate(`/docente/entradas/${g.entradaId}/ver`)
+    } else {
+      navigate(`/docente/entradas/${g.entradaId}`)
+    }
+  }
+
+  const handleDescargar = async (g: GrupoConEntradaDto) => {
+    if (!g.entradaId) return
+    const res = await descargarEntrada(g.entradaId)
+    const url = window.URL.createObjectURL(new Blob([res.data as BlobPart]))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `informe-${g.practica}-grupo${g.numeroGrupo}.docx`
+    a.click()
+    window.URL.revokeObjectURL(url)
   }
 
   const accionLabel = (g: GrupoConEntradaDto) => {
@@ -136,17 +153,29 @@ export function Dashboard() {
                       : '—'}
                   </td>
                   <td className="px-6 py-4">
-                    <button
-                      onClick={() => handleAccion(g)}
-                      disabled={!g.entradaId}
-                      className={`px-3 py-1.5 text-label-caps font-semibold rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed ${
-                        g.estado === 'Enviado'
-                          ? 'border border-outline-variant text-on-surface-variant hover:bg-surface-container'
-                          : 'bg-primary text-on-primary hover:bg-primary-container'
-                      }`}
-                    >
-                      {accionLabel(g)}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleAccion(g)}
+                        disabled={!g.entradaId}
+                        className={`px-3 py-1.5 text-label-caps font-semibold rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed ${
+                          g.estado === 'Enviado'
+                            ? 'border border-outline-variant text-on-surface-variant hover:bg-surface-container'
+                            : 'bg-primary text-on-primary hover:bg-primary-container'
+                        }`}
+                      >
+                        {accionLabel(g)}
+                      </button>
+                      {g.estado === 'Enviado' && (
+                        <button
+                          onClick={() => handleDescargar(g)}
+                          title="Descargar .docx"
+                          className="flex items-center gap-1 px-3 py-1.5 text-label-caps font-semibold rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition"
+                        >
+                          <Download size={13} />
+                          .docx
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

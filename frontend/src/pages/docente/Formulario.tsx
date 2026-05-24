@@ -51,7 +51,7 @@ export default function Formulario() {
 
   const handleEnviar = async () => {
     await enviarEntrada(entradaId ?? '')
-    navigate('/docente')
+    navigate(`/docente/entradas/${entradaId}/ver`)
   }
 
   const gruposParaSidebar = grupos

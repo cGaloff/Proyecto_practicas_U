@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { DocenteLayout } from './components/layout/DocenteLayout'
 import { Dashboard } from './pages/docente/Dashboard'
 import Formulario from './pages/docente/Formulario'
+import EntradaEnviada from './pages/docente/EntradaEnviada'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="/docente" element={<Dashboard />} />
             <Route path="/docente/historial" element={<PlaceholderPage title="Historial" />} />
             <Route path="/docente/perfil" element={<PlaceholderPage title="Mi perfil" />} />
+            <Route path="/docente/entradas/:entradaId/ver" element={<EntradaEnviada />} />
           </Route>
           <Route path="/docente/entradas/:entradaId" element={<Formulario />} />
         </Route>
