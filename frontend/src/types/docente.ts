@@ -39,14 +39,27 @@ export interface Seccion3Data {
   noAprobaron: number
 }
 
+export interface ActividadItem {
+  aplica: boolean
+  descripcion: string
+}
+
+export interface Seccion4AData {
+  salidasCampo: ActividadItem
+  eventosAcademicos: ActividadItem
+  clasesEspejo: ActividadItem
+}
+
 export interface EntradaDetalleDto extends EntradaDetalle {
   docenteNombre?: string
   seccion2B?: Seccion2BData | null
   seccion3?: Seccion3Data | null
+  seccion4A?: Seccion4AData | null
 }
 
 export interface GuardarBorradorRequest {
   seccion2B?: Seccion2BData
   seccion3?: Seccion3Data
+  seccion4A?: Seccion4AData
   [key: string]: unknown
 }
