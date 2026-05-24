@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { FormularioLayout } from '../../components/layout/FormularioLayout'
 import { Seccion1Modalidades } from '../../components/forms/Seccion1Modalidades'
 import { Seccion2Situacion } from '../../components/forms/Seccion2Situacion'
 import { Seccion3Actividades } from '../../components/forms/Seccion3Actividades'
 import { Seccion4Resultados } from '../../components/forms/Seccion4Resultados'
 import { Seccion5Observaciones } from '../../components/forms/Seccion5Observaciones'
+import { Seccion6Anexos } from '../../components/forms/Seccion6Anexos'
 import { useEntrada } from '../../hooks/useEntrada'
+import { enviarEntrada } from '../../api/docente'
 import { useGrupos } from '../../hooks/useGrupos'
 import { useAuthStore } from '../../store/authStore'
 import type { GuardarBorradorRequest } from '../../types/docente'
@@ -22,6 +24,7 @@ const SECCIONES = [
 
 export default function Formulario() {
   const { entradaId } = useParams<{ entradaId: string }>()
+  const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
 
   const [seccionActiva, setSeccionActiva] = useState(1)
@@ -44,6 +47,11 @@ export default function Formulario() {
 
   const irAAnterior = () => {
     setSeccionActiva((s) => s - 1)
+  }
+
+  const handleEnviar = async () => {
+    await enviarEntrada(entradaId ?? '')
+    navigate('/docente')
   }
 
   const gruposParaSidebar = grupos
@@ -135,10 +143,15 @@ export default function Formulario() {
         />
       )}
 
-      {seccionActiva > 5 && (
-        <div className="p-8 text-on-surface-variant">
-          Sección {seccionActiva} — en construcción
-        </div>
+      {seccionActiva === 6 && (
+        <Seccion6Anexos
+          entrada={entradaConDatos}
+          guardando={guardando}
+          guardadoEn={guardadoEn}
+          onGuardar={guardarConDebounce}
+          onAnterior={irAAnterior}
+          onEnviar={handleEnviar}
+        />
       )}
     </FormularioLayout>
   )

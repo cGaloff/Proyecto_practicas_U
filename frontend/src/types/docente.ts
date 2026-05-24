@@ -68,6 +68,7 @@ export interface Seccion5BData {
 
 export interface EntradaDetalleDto extends EntradaDetalle {
   docenteNombre?: string
+  enlaceEvidencias?: string | null
   seccion2B?: Seccion2BData | null
   seccion3?: Seccion3Data | null
   seccion4A?: Seccion4AData | null
@@ -77,6 +78,7 @@ export interface EntradaDetalleDto extends EntradaDetalle {
 }
 
 export interface GuardarBorradorRequest {
+  enlaceEvidencias?: string
   seccion2B?: Seccion2BData
   seccion3?: Seccion3Data
   seccion4A?: Seccion4AData
