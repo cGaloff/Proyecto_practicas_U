@@ -50,16 +50,24 @@ export interface Seccion4AData {
   clasesEspejo: ActividadItem
 }
 
+export interface Seccion4BData {
+  estrategias: string
+  publicaciones: string
+  otras: string
+}
+
 export interface EntradaDetalleDto extends EntradaDetalle {
   docenteNombre?: string
   seccion2B?: Seccion2BData | null
   seccion3?: Seccion3Data | null
   seccion4A?: Seccion4AData | null
+  seccion4B?: Seccion4BData | null
 }
 
 export interface GuardarBorradorRequest {
   seccion2B?: Seccion2BData
   seccion3?: Seccion3Data
   seccion4A?: Seccion4AData
+  seccion4B?: Seccion4BData
   [key: string]: unknown
 }
