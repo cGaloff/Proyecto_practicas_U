@@ -56,12 +56,24 @@ export interface Seccion4BData {
   otras: string
 }
 
+export interface Seccion5AData {
+  logros: string
+  lecciones: string
+}
+
+export interface Seccion5BData {
+  limitaciones: string
+  recomendaciones: string
+}
+
 export interface EntradaDetalleDto extends EntradaDetalle {
   docenteNombre?: string
   seccion2B?: Seccion2BData | null
   seccion3?: Seccion3Data | null
   seccion4A?: Seccion4AData | null
   seccion4B?: Seccion4BData | null
+  seccion5A?: Seccion5AData | null
+  seccion5B?: Seccion5BData | null
 }
 
 export interface GuardarBorradorRequest {
@@ -69,5 +81,7 @@ export interface GuardarBorradorRequest {
   seccion3?: Seccion3Data
   seccion4A?: Seccion4AData
   seccion4B?: Seccion4BData
+  seccion5A?: Seccion5AData
+  seccion5B?: Seccion5BData
   [key: string]: unknown
 }
