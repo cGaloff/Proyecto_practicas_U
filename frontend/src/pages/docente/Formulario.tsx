@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { FormularioLayout } from '../../components/layout/FormularioLayout'
 import { Seccion1Modalidades } from '../../components/forms/Seccion1Modalidades'
 import { Seccion2Situacion } from '../../components/forms/Seccion2Situacion'
+import { Seccion3Actividades } from '../../components/forms/Seccion3Actividades'
 import { useEntrada } from '../../hooks/useEntrada'
 import { useGrupos } from '../../hooks/useGrupos'
 import { useAuthStore } from '../../store/authStore'
@@ -99,7 +100,18 @@ export default function Formulario() {
         />
       )}
 
-      {seccionActiva > 2 && (
+      {seccionActiva === 3 && (
+        <Seccion3Actividades
+          entrada={entradaConDatos}
+          guardando={guardando}
+          guardadoEn={guardadoEn}
+          onGuardar={guardarConDebounce}
+          onSiguiente={irASiguiente}
+          onAnterior={irAAnterior}
+        />
+      )}
+
+      {seccionActiva > 3 && (
         <div className="p-8 text-on-surface-variant">
           Sección {seccionActiva} — en construcción
         </div>
