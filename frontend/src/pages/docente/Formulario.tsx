@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { FormularioLayout } from '../../components/layout/FormularioLayout'
+import { Seccion1Modalidades } from '../../components/forms/Seccion1Modalidades'
+import { Seccion2Situacion } from '../../components/forms/Seccion2Situacion'
 import { useEntrada } from '../../hooks/useEntrada'
 import { useGrupos } from '../../hooks/useGrupos'
+import { useAuthStore } from '../../store/authStore'
+import type { GuardarBorradorRequest } from '../../types/docente'
 
 const SECCIONES = [
   { id: 1, nombre: 'Modalidades' },
@@ -15,17 +19,29 @@ const SECCIONES = [
 
 export default function Formulario() {
   const { entradaId } = useParams<{ entradaId: string }>()
+  const user = useAuthStore((s) => s.user)
 
   const [seccionActiva, setSeccionActiva] = useState(1)
   const [seccionesCompletadas, setSeccionesCompletadas] = useState<Set<number>>(new Set())
 
-  const { entrada, loading, error } = useEntrada(entradaId ?? '')
+  const { entrada, loading, error, guardando, guardadoEn, guardar, guardarConDebounce } =
+    useEntrada(entradaId ?? '')
   const { grupos } = useGrupos()
 
   useEffect(() => {
     setSeccionActiva(1)
     setSeccionesCompletadas(new Set())
   }, [entradaId])
+
+  const irASiguiente = async (data: GuardarBorradorRequest) => {
+    await guardar(data)
+    setSeccionesCompletadas((prev) => new Set([...prev, seccionActiva]))
+    setSeccionActiva((s) => s + 1)
+  }
+
+  const irAAnterior = () => {
+    setSeccionActiva((s) => s - 1)
+  }
 
   const gruposParaSidebar = grupos
     .filter((g): g is typeof g & { entradaId: string } => g.entradaId !== null)
@@ -48,6 +64,11 @@ export default function Formulario() {
     </div>
   )
 
+  const entradaConDatos = {
+    ...entrada,
+    docenteNombre: entrada.docenteNombre ?? user?.nombreCompleto ?? '',
+  }
+
   return (
     <FormularioLayout
       secciones={SECCIONES}
@@ -57,12 +78,32 @@ export default function Formulario() {
       entradaIdActiva={entradaId ?? ''}
       onCambiarSeccion={setSeccionActiva}
     >
-      {/* Las secciones se agregarán en prompts 1-6 */}
-      <div className="p-8">
-        <p className="text-on-surface-variant">
+      {seccionActiva === 1 && (
+        <Seccion1Modalidades
+          entrada={entradaConDatos}
+          guardando={guardando}
+          guardadoEn={guardadoEn}
+          onGuardar={guardarConDebounce}
+          onSiguiente={irASiguiente}
+        />
+      )}
+
+      {seccionActiva === 2 && (
+        <Seccion2Situacion
+          entrada={entradaConDatos}
+          guardando={guardando}
+          guardadoEn={guardadoEn}
+          onGuardar={guardarConDebounce}
+          onSiguiente={irASiguiente}
+          onAnterior={irAAnterior}
+        />
+      )}
+
+      {seccionActiva > 2 && (
+        <div className="p-8 text-on-surface-variant">
           Sección {seccionActiva} — en construcción
-        </p>
-      </div>
+        </div>
+      )}
     </FormularioLayout>
   )
 }
