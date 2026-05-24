@@ -5,6 +5,7 @@ import { Seccion1Modalidades } from '../../components/forms/Seccion1Modalidades'
 import { Seccion2Situacion } from '../../components/forms/Seccion2Situacion'
 import { Seccion3Actividades } from '../../components/forms/Seccion3Actividades'
 import { Seccion4Resultados } from '../../components/forms/Seccion4Resultados'
+import { Seccion5Observaciones } from '../../components/forms/Seccion5Observaciones'
 import { useEntrada } from '../../hooks/useEntrada'
 import { useGrupos } from '../../hooks/useGrupos'
 import { useAuthStore } from '../../store/authStore'
@@ -123,7 +124,18 @@ export default function Formulario() {
         />
       )}
 
-      {seccionActiva > 4 && (
+      {seccionActiva === 5 && (
+        <Seccion5Observaciones
+          entrada={entradaConDatos}
+          guardando={guardando}
+          guardadoEn={guardadoEn}
+          onGuardar={guardarConDebounce}
+          onSiguiente={irASiguiente}
+          onAnterior={irAAnterior}
+        />
+      )}
+
+      {seccionActiva > 5 && (
         <div className="p-8 text-on-surface-variant">
           Sección {seccionActiva} — en construcción
         </div>
