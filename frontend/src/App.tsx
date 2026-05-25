@@ -7,6 +7,7 @@ import { Dashboard } from './pages/docente/Dashboard'
 import Formulario from './pages/docente/Formulario'
 import EntradaEnviada from './pages/docente/EntradaEnviada'
 import AdminDashboard from './pages/admin/Dashboard'
+import VistaPrograma from './pages/admin/VistaPrograma'
 
 export default function App() {
   return (
@@ -28,7 +29,7 @@ export default function App() {
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/programas" element={<PlaceholderPage title="Por programa" />} />
-            <Route path="/admin/programas/:id" element={<PlaceholderPage title="Detalle programa" />} />
+            <Route path="/admin/programas/:id" element={<VistaPrograma />} />
             <Route path="/admin/docentes" element={<PlaceholderPage title="Por docente" />} />
             <Route path="/admin/docentes/:id" element={<PlaceholderPage title="Detalle docente" />} />
             <Route path="/admin/exportar" element={<PlaceholderPage title="Exportar" />} />
