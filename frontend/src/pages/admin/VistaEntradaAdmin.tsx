@@ -4,7 +4,7 @@ import {
   ChevronLeft, Download, ExternalLink, CheckCircle, AlertTriangle,
   Users, BookOpen, Map, CalendarCheck, Lightbulb, Trophy, ArrowUpRight, Link,
 } from 'lucide-react'
-import { getEntradaAdmin, descargarEntrada, getAuditoria } from '../../api/admin'
+import { getEntradaAdmin, descargarEntrada } from '../../api/admin'
 import { Badge } from '../../components/ui/Badge'
 import type { EntradaDetalleDto } from '../../types/docente'
 import type { AuditoriaItem } from '../../types/admin'
@@ -41,7 +41,7 @@ export default function VistaEntradaAdmin() {
   const { entradaId } = useParams<{ entradaId: string }>()
   const navigate = useNavigate()
   const [entrada, setEntrada] = useState<EntradaDetalleDto | null>(null)
-  const [auditoria, setAuditoria] = useState<AuditoriaItem[]>([])
+  const auditoria: AuditoriaItem[] = []
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [descargando, setDescargando] = useState(false)
