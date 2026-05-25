@@ -10,6 +10,7 @@ import AdminDashboard from './pages/admin/Dashboard'
 import VistaPrograma from './pages/admin/VistaPrograma'
 import ListaDocentes from './pages/admin/ListaDocentes'
 import VistaDocente from './pages/admin/VistaDocente'
+import VistaEntradaAdmin from './pages/admin/VistaEntradaAdmin'
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
             <Route path="/admin/programas/:id" element={<VistaPrograma />} />
             <Route path="/admin/docentes" element={<ListaDocentes />} />
             <Route path="/admin/docentes/:id" element={<VistaDocente />} />
+            <Route path="/admin/entradas/:entradaId" element={<VistaEntradaAdmin />} />
             <Route path="/admin/exportar" element={<PlaceholderPage title="Exportar" />} />
           </Route>
         </Route>
