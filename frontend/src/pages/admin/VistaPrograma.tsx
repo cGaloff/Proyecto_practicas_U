@@ -4,7 +4,8 @@ import { ChevronLeft, Download, FileText, RefreshCw } from 'lucide-react'
 import { getProgramas, getProgramaEntradas, descargarEntrada, descargarConsolidado } from '../../api/admin'
 import { AdminBadge } from '../../components/ui/AdminBadge'
 import { ModalCambiarEstado } from '../../components/ui/ModalCambiarEstado'
-import type { ProgramaResumen, ProgramaEntradas, EstadoEntrada } from '../../types/admin'
+import { ModalDevolverEntrada } from '../../components/ui/ModalDevolverEntrada'
+import type { ProgramaResumen, ProgramaEntradas, EntradaResumen, EstadoEntrada } from '../../types/admin'
 
 const estadoEntradaConfig: Record<EstadoEntrada, { label: string; className: string }> = {
   SinIniciar: { label: 'Sin iniciar', className: 'bg-gray-100 text-gray-500' },
@@ -30,6 +31,7 @@ export default function VistaPrograma() {
   const [detalle, setDetalle] = useState<ProgramaEntradas | null>(null)
   const [loading, setLoading] = useState(true)
   const [modalAbierto, setModalAbierto] = useState(false)
+  const [entradaADevolver, setEntradaADevolver] = useState<EntradaResumen | null>(null)
   const [descargando, setDescargando] = useState<string | null>(null)
   const [descargandoConsolidado, setDescargandoConsolidado] = useState(false)
 
@@ -88,10 +90,6 @@ export default function VistaPrograma() {
     }
   }
 
-  const consolidadoHabilitado = programa
-    ? ['ListoParaRevision', 'EnRevision', 'Aprobado'].includes(programa.estado)
-    : false
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -111,6 +109,7 @@ export default function VistaPrograma() {
   const enviadas = detalle.entradas.filter((e) => e.estado === 'Enviado').length
   const total = detalle.entradas.length
   const pct = total > 0 ? Math.round((enviadas / total) * 100) : 0
+  const consolidadoHabilitado = enviadas > 0
 
   return (
     <div className="pb-24">
@@ -211,19 +210,30 @@ export default function VistaPrograma() {
                       : '—'}
                   </td>
                   <td className="px-6 py-4">
-                    {e.estado === 'Enviado' && (
-                      <button
-                        onClick={() => handleDescargarEntrada(e.id, e.docente, e.practica)}
-                        disabled={descargando === e.id}
-                        title="Descargar informe"
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#002f5a] bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
-                      >
-                        {descargando === e.id
-                          ? <span className="w-3 h-3 border-2 border-[#002f5a]/30 border-t-[#002f5a] rounded-full animate-spin" />
-                          : <Download size={12} />}
-                        .docx
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {e.estado === 'Enviado' && (
+                        <button
+                          onClick={() => handleDescargarEntrada(e.id, e.docente, e.practica)}
+                          disabled={descargando === e.id}
+                          title="Descargar informe"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#002f5a] bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
+                        >
+                          {descargando === e.id
+                            ? <span className="w-3 h-3 border-2 border-[#002f5a]/30 border-t-[#002f5a] rounded-full animate-spin" />
+                            : <Download size={12} />}
+                          .docx
+                        </button>
+                      )}
+                      {e.estado === 'Enviado' && (
+                        <button
+                          onClick={() => setEntradaADevolver(e)}
+                          className="text-xs px-2 py-1 rounded border border-danger text-danger hover:bg-danger-bg transition-colors"
+                          title="Devolver esta entrada al docente"
+                        >
+                          Devolver
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -242,9 +252,9 @@ export default function VistaPrograma() {
       {/* Fixed footer */}
       <div className="fixed bottom-0 left-[224px] right-0 bg-white border-t border-gray-200 px-8 py-4 flex items-center justify-between z-40">
         <p className="text-sm text-gray-500">
-          {consolidadoHabilitado
-            ? 'El consolidado está disponible para descarga.'
-            : 'El consolidado estará disponible cuando todas las entradas sean enviadas.'}
+          {enviadas > 0
+            ? `Consolidado disponible con ${enviadas} de ${total} entradas enviadas.`
+            : 'No hay entradas enviadas aún.'}
         </p>
         <button
           onClick={handleDescargarConsolidado}
@@ -258,7 +268,7 @@ export default function VistaPrograma() {
         </button>
       </div>
 
-      {/* Modal */}
+      {/* Modal cambiar estado informe */}
       {modalAbierto && (
         <ModalCambiarEstado
           informeId={programa.informeId}
@@ -266,6 +276,21 @@ export default function VistaPrograma() {
           onClose={() => setModalAbierto(false)}
           onExito={() => {
             setModalAbierto(false)
+            cargarDatos()
+          }}
+        />
+      )}
+
+      {/* Modal devolver entrada individual */}
+      {entradaADevolver && (
+        <ModalDevolverEntrada
+          entradaId={entradaADevolver.id}
+          docenteNombre={entradaADevolver.docente}
+          practica={entradaADevolver.practica}
+          numeroGrupo={entradaADevolver.numeroGrupo}
+          onClose={() => setEntradaADevolver(null)}
+          onExito={() => {
+            setEntradaADevolver(null)
             cargarDatos()
           }}
         />

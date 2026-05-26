@@ -155,7 +155,7 @@ export default function AdminDashboard() {
                 const pct = p.totalEntradas > 0
                   ? Math.round((p.enviadas / p.totalEntradas) * 100)
                   : 0
-                const listo = ['ListoParaRevision', 'EnRevision', 'Aprobado'].includes(p.estado)
+                const listo = p.enviadas > 0
                 return (
                   <tr
                     key={p.programaId}

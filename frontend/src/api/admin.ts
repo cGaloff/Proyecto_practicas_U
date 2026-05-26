@@ -29,3 +29,9 @@ export const cambiarEstadoInforme = (id: string, body: CambiarEstadoRequest) =>
 
 export const getAuditoria = (id: string) =>
   client.get<AuditoriaItem[]>(`/admin/informes/${id}/auditoria`).then((r) => r.data)
+
+export const devolverEntrada = (entradaId: string, observacion: string) =>
+  client.put<{ mensaje: string; exitoso: boolean }>(
+    `/admin/entradas/${entradaId}/devolver`,
+    { observacion }
+  )
