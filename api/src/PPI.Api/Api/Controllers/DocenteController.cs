@@ -282,19 +282,6 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 Mensaje = "La sección 2B (distribución por modalidad) es obligatoria."
             });
 
-        // Validación de negocio: suma debe igualar matriculados
-        var totalModalidades = entrada.Seccion2B.Total;
-        var matriculados     = entrada.GrupoAsignado.Matriculados;
-
-        if (totalModalidades != matriculados)
-            return BadRequest(new MensajeResponse
-            {
-                Exitoso = false,
-                Mensaje = $"La suma de modalidades ({totalModalidades}) no coincide " +
-                          $"con el total de estudiantes matriculados ({matriculados}). " +
-                          $"Revisa la sección 2B."
-            });
-
         // Todo válido — marcar como enviado
         entrada.Estado       = EstadoEntrada.Enviado;
         entrada.EnviadoEn    = DateTime.UtcNow;
