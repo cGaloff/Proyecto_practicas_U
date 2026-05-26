@@ -36,7 +36,7 @@ export default function Formulario() {
 
   const { entrada, loading, error, guardando, guardadoEn, guardar, guardarConDebounce } =
     useEntrada(entradaId ?? '')
-  const { grupos } = useGrupos()
+  const { grupos, refetch: refetchGrupos } = useGrupos()
 
   useEffect(() => {
     setSeccionActiva(1)
@@ -62,6 +62,9 @@ export default function Formulario() {
   const handleEnviar = async () => {
     try {
       await enviarEntrada(entradaId ?? '')
+
+      // Actualiza el estado del hook para que el sidebar refleje el ✓ verde
+      await refetchGrupos()
 
       const gruposActualizados = await getGrupos()
       const pendientes = gruposActualizados.data.filter(
