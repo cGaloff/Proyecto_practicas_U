@@ -187,29 +187,20 @@ public class AdminController(AppDbContext db) : ControllerBase
                 Mensaje = "No se encontró un informe activo para este programa."
             });
 
-        var estadosPermitidos = new[]
-        {
-            EstadoInforme.ListoParaRevision,
-            EstadoInforme.EnRevision,
-            EstadoInforme.Aprobado
-        };
+        // Verificar que hay al menos una entrada enviada
+        var entradasEnviadas = informe.Entradas
+            .Where(e => e.Estado == EstadoEntrada.Enviado)
+            .ToList();
 
-        if (!estadosPermitidos.Contains(informe.Estado))
-        {
-            var enviadas = informe.Entradas
-                .Count(e => e.Estado == EstadoEntrada.Enviado);
-            var total = informe.Entradas.Count;
-
+        if (!entradasEnviadas.Any())
             return Conflict(new MensajeResponse
             {
                 Exitoso = false,
-                Mensaje = $"El consolidado no está disponible todavía. " +
-                          $"{enviadas} de {total} entradas han sido enviadas. " +
-                          $"Todas deben estar enviadas para generar el consolidado."
+                Mensaje = "No hay entradas enviadas para generar el consolidado."
             });
-        }
 
-        var entradasOrdenadas = informe.Entradas
+        // Usar solo las entradas enviadas para el consolidado
+        var entradasOrdenadas = entradasEnviadas
             .OrderBy(e => e.GrupoAsignado.Practica)
             .ThenBy(e => e.GrupoAsignado.NumeroGrupo)
             .ToList();
@@ -397,7 +388,81 @@ public class AdminController(AppDbContext db) : ControllerBase
         return Ok(auditorias);
     }
 
+    // ── PUT /api/admin/entradas/{id}/devolver ─────────────────
+    /// <summary>
+    /// Devuelve una entrada individual a un docente específico.
+    /// Solo cambia el estado de ESA entrada, no afecta las demás.
+    /// La observación es obligatoria.
+    /// </summary>
+    [HttpPut("entradas/{id:guid}/devolver")]
+    [ProducesResponseType(typeof(MensajeResponse), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> DevolverEntrada(
+        Guid id,
+        [FromBody] DevolverEntradaRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Observacion))
+            return BadRequest(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "La observación es obligatoria para devolver una entrada."
+            });
+
+        var entrada = await db.EntradasInforme
+            .Include(e => e.GrupoAsignado)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (entrada == null)
+            return NotFound(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "Entrada no encontrada."
+            });
+
+        if (entrada.Estado != EstadoEntrada.Enviado)
+            return BadRequest(new MensajeResponse
+            {
+                Exitoso = false,
+                Mensaje = "Solo se pueden devolver entradas en estado Enviado."
+            });
+
+        entrada.Estado           = EstadoEntrada.Devuelto;
+        entrada.ObservacionAdmin = req.Observacion;
+        entrada.EnviadoEn        = null;
+        entrada.FirmaDigital     = null;
+
+        await RecalcularEstadoInformeAsync(entrada.InformeId);
+
+        await db.SaveChangesAsync();
+
+        return Ok(new MensajeResponse
+        {
+            Mensaje = "Entrada devuelta correctamente al docente."
+        });
+    }
+
     // ── Helper ─────────────────────────────────────────────────
+
+    private async Task RecalcularEstadoInformeAsync(Guid informeId)
+    {
+        var informe = await db.Informes
+            .Include(i => i.Entradas)
+            .FirstOrDefaultAsync(i => i.Id == informeId);
+
+        if (informe == null) return;
+
+        var todasEnviadas = informe.Entradas.All(e => e.Estado == EstadoEntrada.Enviado);
+
+        if (!todasEnviadas &&
+            (informe.Estado == EstadoInforme.ListoParaRevision ||
+             informe.Estado == EstadoInforme.EnRevision ||
+             informe.Estado == EstadoInforme.Aprobado))
+        {
+            informe.Estado        = EstadoInforme.EnProgreso;
+            informe.ActualizadoEn = DateTime.UtcNow;
+        }
+    }
 
     private Guid? GetAdminId()
     {
@@ -413,4 +478,11 @@ public class CambiarEstadoRequest
     public string NuevoEstado { get; set; } = string.Empty;
 
     public string? Observacion { get; set; }
+}
+
+public class DevolverEntradaRequest
+{
+    [Required]
+    [MaxLength(1000)]
+    public string Observacion { get; set; } = string.Empty;
 }

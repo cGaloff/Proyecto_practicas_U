@@ -10,6 +10,17 @@ RUN dotnet publish PPI.Api.csproj -c Release -o /app/publish --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
+# Instalar LibreOffice para conversión Word → PDF
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      libreoffice \
+      libreoffice-writer \
+      fonts-liberation \
+      fonts-dejavu \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/publish .
 COPY src/PPI.Api/Templates/ Templates/
 

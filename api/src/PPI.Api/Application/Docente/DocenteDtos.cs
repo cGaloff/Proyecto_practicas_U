@@ -9,6 +9,7 @@ public class GrupoConEntradaDto
     public int NumeroGrupo { get; set; }
     public int Matriculados { get; set; }
     public string Estado { get; set; } = string.Empty;
+    public string Programa { get; set; } = string.Empty;
     public DateTime? GuardadoEn { get; set; }
     public DateTime? EnviadoEn { get; set; }
     public string? ObservacionAdmin { get; set; }
