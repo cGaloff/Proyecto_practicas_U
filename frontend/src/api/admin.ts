@@ -1,6 +1,7 @@
 import client from './client'
 import type { ProgramaResumen, ProgramaEntradas, DocenteConEntradas, AuditoriaItem, CambiarEstadoRequest } from '../types/admin'
 import type { MensajeResponse } from '../types/auth'
+import type { EntradaDetalleDto } from '../types/docente'
 
 export const getProgramas = () =>
   client.get<ProgramaResumen[]>('/admin/programas').then((r) => r.data)
@@ -13,6 +14,9 @@ export const getDocentes = () =>
 
 export const getDocenteEntradas = (id: string) =>
   client.get<DocenteConEntradas>(`/admin/docentes/${id}/entradas`).then((r) => r.data)
+
+export const getEntradaAdmin = (id: string) =>
+  client.get<EntradaDetalleDto>(`/admin/entradas/${id}`).then((r) => r.data)
 
 export const descargarEntrada = (id: string) =>
   client.get(`/admin/entradas/${id}/descargar`, { responseType: 'blob' }).then((r) => r.data)
