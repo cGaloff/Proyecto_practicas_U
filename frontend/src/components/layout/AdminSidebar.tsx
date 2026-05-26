@@ -30,16 +30,16 @@ export function AdminSidebar() {
     <aside className="fixed top-0 left-0 h-full w-[224px] flex flex-col z-40 bg-[#002f5a]">
 
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
+      <div className="flex items-center gap-3 px-4 pt-6 pb-5 border-b border-white/10">
         <img
           src="/logos/logo-oeum.png"
-          alt="Logo FCE"
-          className="h-9 w-9 object-contain flex-shrink-0"
+          alt="PFCE"
+          className="h-12 w-12 object-contain flex-shrink-0"
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
-        <div className="flex flex-col min-w-0">
-          <span className="font-semibold text-white text-[15px] leading-tight truncate">Practicas FCE</span>
-          <span className="text-[11px] text-blue-300 leading-tight">Panel Administrativo</span>
+        <div className="flex flex-col leading-tight min-w-0">
+          <span className="text-white font-bold text-[17px]">PFCE</span>
+          <span className="text-blue-300 text-[12px]">Panel Administrativo</span>
         </div>
       </div>
 
@@ -68,11 +68,12 @@ export function AdminSidebar() {
       </nav>
 
       {/* Banner institucional */}
-      <div className="px-3 pb-3">
+      <div className="px-4 py-4 border-t border-white/10">
         <img
           src="/logos/banner.png"
-          alt="Unimagdalena"
-          className="w-full object-contain opacity-80"
+          alt="Unimagdalena acreditada"
+          className="w-full max-w-[180px] object-contain opacity-90"
+          style={{ filter: 'brightness(1.1)' }}
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
       </div>

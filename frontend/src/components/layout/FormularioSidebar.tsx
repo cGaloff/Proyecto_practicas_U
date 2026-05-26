@@ -44,16 +44,16 @@ export function FormularioSidebar({
     <aside className="fixed left-0 top-0 h-screen w-[224px] bg-primary flex flex-col py-8 z-20">
 
       {/* 1. LOGO / TÍTULO */}
-      <div className="flex items-center gap-3 px-4 py-5">
+      <div className="flex items-center gap-3 px-4 pt-6 pb-5">
         <img
           src="/logos/logo-oeum.png"
-          alt="Logo FCE"
-          className="h-9 w-9 object-contain flex-shrink-0"
+          alt="PFCE"
+          className="h-12 w-12 object-contain flex-shrink-0"
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
-        <div className="flex flex-col">
-          <span className="text-white font-semibold text-[15px] leading-tight">Practicas FCE</span>
-          <span className="text-white/60 text-[11px] leading-tight">Universidad del Magdalena</span>
+        <div className="flex flex-col leading-tight">
+          <span className="text-white font-bold text-[17px]">PFCE</span>
+          <span className="text-white/70 text-[12px]">Universidad del Magdalena</span>
         </div>
       </div>
 
@@ -130,11 +130,12 @@ export function FormularioSidebar({
       </div>
 
       {/* BANNER INSTITUCIONAL */}
-      <div className="px-3 pb-3">
+      <div className="px-4 py-4 border-t border-white/10">
         <img
           src="/logos/banner.png"
-          alt="Unimagdalena"
-          className="w-full object-contain opacity-80"
+          alt="Unimagdalena acreditada"
+          className="w-full max-w-[180px] object-contain opacity-90"
+          style={{ filter: 'brightness(1.1)' }}
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
       </div>
