@@ -135,8 +135,7 @@ export function Seccion1Modalidades({
           <AutosaveIndicator guardando={guardando} guardadoEn={guardadoEn} />
           <button
             onClick={handleSiguiente}
-            disabled={!coincide}
-            className="flex items-center gap-2 px-10 py-3 bg-primary-container text-on-primary font-bold text-body-md rounded-lg hover:bg-primary transition-all shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+            className="flex items-center gap-2 px-10 py-3 bg-primary-container text-on-primary font-bold text-body-md rounded-lg hover:bg-primary transition-all shadow-md hover:shadow-lg"
           >
             Siguiente
             <ArrowRight size={18} />

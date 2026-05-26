@@ -18,6 +18,7 @@ export function Seccion6Anexos({
   entrada, guardando, guardadoEn, onGuardar, onAnterior, onEnviar, esReenvio = false,
 }: Props) {
   const [enlace, setEnlace] = useState(entrada.enlaceEvidencias ?? '')
+  const enlaceValido = enlace.trim().length > 0
   const [mostrarModal, setMostrarModal] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
@@ -88,6 +89,9 @@ export function Seccion6Anexos({
               className="w-full pl-10 pr-4 py-3.5 border border-outline-variant rounded-lg text-body-md text-on-surface focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all"
             />
           </div>
+          {!enlaceValido && (
+            <p className="text-xs text-danger mt-1">El enlace de evidencias es obligatorio para enviar el informe.</p>
+          )}
 
           {/* Banner amber */}
           <div className="mt-5 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg p-4">
@@ -130,7 +134,9 @@ export function Seccion6Anexos({
             </button>
             <button
               onClick={() => setMostrarModal(true)}
-              className="flex items-center gap-2 px-10 py-3 bg-primary-container text-on-primary font-bold text-body-md rounded-lg hover:bg-primary transition-all shadow-md hover:shadow-lg"
+              disabled={!enlaceValido}
+              title={!enlaceValido ? 'Debes ingresar el enlace de evidencias antes de enviar' : undefined}
+              className="flex items-center gap-2 px-10 py-3 bg-primary-container text-on-primary font-bold text-body-md rounded-lg hover:bg-primary transition-all shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {esReenvio ? 'Reenviar informe' : 'Enviar informe'}
               <Send size={16} />
