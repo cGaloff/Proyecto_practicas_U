@@ -44,15 +44,16 @@ export function FormularioSidebar({
     <aside className="fixed left-0 top-0 h-screen w-[224px] bg-primary flex flex-col py-8 z-20">
 
       {/* 1. LOGO / TÍTULO */}
-      <div className="px-5 mb-8 flex items-center gap-3">
+      <div className="flex items-center gap-3 px-4 py-5">
         <img
-          src="/logos/logo-pfce.png"
-          alt="PFCE"
-          className="w-10 h-10 object-contain flex-shrink-0"
+          src="/logos/logo-oeum.png"
+          alt="Logo FCE"
+          className="h-9 w-9 object-contain flex-shrink-0"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
-        <div className="min-w-0">
-          <h1 className="text-white text-base font-semibold leading-tight truncate">Practicas FCE</h1>
-          <p className="text-white/65 text-[11px] mt-0.5 truncate">Universidad del Magdalena</p>
+        <div className="flex flex-col">
+          <span className="text-white font-semibold text-[15px] leading-tight">Practicas FCE</span>
+          <span className="text-white/60 text-[11px] leading-tight">Universidad del Magdalena</span>
         </div>
       </div>
 
@@ -128,10 +129,14 @@ export function FormularioSidebar({
         </div>
       </div>
 
-      {/* LOGOS INSTITUCIONALES */}
-      <div className="flex items-center gap-2 px-4 py-3 border-t border-white/10">
-        <img src="/logos/logo-unimagdalena.png" alt="Unimagdalena" className="h-8 w-auto object-contain" />
-        <img src="/logos/logo-acreditacion.png" alt="Acreditación" className="h-8 w-auto object-contain" />
+      {/* BANNER INSTITUCIONAL */}
+      <div className="px-3 pb-3">
+        <img
+          src="/logos/banner.png"
+          alt="Unimagdalena"
+          className="w-full object-contain opacity-80"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
       </div>
 
       {/* 4. BOTÓN VOLVER AL INICIO */}

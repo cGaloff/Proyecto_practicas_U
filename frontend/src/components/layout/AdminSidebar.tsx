@@ -30,15 +30,16 @@ export function AdminSidebar() {
     <aside className="fixed top-0 left-0 h-full w-[224px] flex flex-col z-40 bg-[#002f5a]">
 
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-6 border-b border-white/10">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
         <img
-          src="/logos/logo-pfce.png"
-          alt="PFCE"
-          className="w-9 h-9 object-contain flex-shrink-0"
+          src="/logos/logo-oeum.png"
+          alt="Logo FCE"
+          className="h-9 w-9 object-contain flex-shrink-0"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
-        <div className="min-w-0">
-          <p className="font-bold text-white text-sm leading-tight truncate">Practicas FCE</p>
-          <p className="text-[11px] text-blue-300 mt-0.5">Panel Administrativo</p>
+        <div className="flex flex-col min-w-0">
+          <span className="font-semibold text-white text-[15px] leading-tight truncate">Practicas FCE</span>
+          <span className="text-[11px] text-blue-300 leading-tight">Panel Administrativo</span>
         </div>
       </div>
 
@@ -66,11 +67,14 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Logos institucionales */}
-      <div className="flex items-center gap-2 px-4 py-3 border-t border-white/10">
-        <img src="/logos/logo-pfce.png" alt="PFCE" className="h-7 w-auto object-contain" />
-        <img src="/logos/logo-unimagdalena.png" alt="Unimagdalena" className="h-7 w-auto object-contain" />
-        <img src="/logos/logo-acreditacion.png" alt="Acreditación" className="h-7 w-auto object-contain" />
+      {/* Banner institucional */}
+      <div className="px-3 pb-3">
+        <img
+          src="/logos/banner.png"
+          alt="Unimagdalena"
+          className="w-full object-contain opacity-80"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
       </div>
 
       {/* Fondo: avatar + cerrar sesión */}
