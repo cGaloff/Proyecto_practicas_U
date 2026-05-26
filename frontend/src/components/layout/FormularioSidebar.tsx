@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle, Settings, HelpCircle } from 'lucide-react'
+import { CheckCircle, AlertTriangle, Settings, HelpCircle } from 'lucide-react'
 
 interface Seccion {
   id: number
@@ -20,6 +20,7 @@ interface Props {
   grupos: Grupo[]
   entradaIdActiva: string
   onCambiarSeccion: (seccion: number) => void
+  estadoEntrada?: string
 }
 
 export function FormularioSidebar({
@@ -29,6 +30,7 @@ export function FormularioSidebar({
   grupos,
   entradaIdActiva,
   onCambiarSeccion,
+  estadoEntrada,
 }: Props) {
   const navigate = useNavigate()
 
@@ -101,7 +103,9 @@ export function FormularioSidebar({
                     : 'text-primary-fixed/40'
                 }`}
               >
-                {completado ? (
+                {estadoEntrada === 'Devuelto' && activo ? (
+                  <AlertTriangle size={14} className="text-orange-400 flex-shrink-0" />
+                ) : completado ? (
                   <CheckCircle size={14} className="text-emerald-400 flex-shrink-0" />
                 ) : (
                   <span className={`w-3.5 h-3.5 flex-shrink-0 flex items-center justify-center rounded-full border text-[9px] font-bold ${
