@@ -31,12 +31,14 @@ export function AdminSidebar() {
 
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-6 border-b border-white/10">
-        <div className="w-9 h-9 rounded-lg bg-orange-400 flex items-center justify-center flex-shrink-0">
-          <span className="text-white font-bold text-sm">PPI</span>
-        </div>
+        <img
+          src="/logos/logo-pfce.png"
+          alt="PFCE"
+          className="w-9 h-9 object-contain flex-shrink-0"
+        />
         <div className="min-w-0">
-          <p className="font-bold text-white text-sm leading-tight truncate">PPI Unimagdalena</p>
-          <p className="text-[11px] text-blue-300 mt-0.5">Admin Panel</p>
+          <p className="font-bold text-white text-sm leading-tight truncate">Practicas FCE</p>
+          <p className="text-[11px] text-blue-300 mt-0.5">Panel Administrativo</p>
         </div>
       </div>
 
@@ -63,6 +65,13 @@ export function AdminSidebar() {
           )
         })}
       </nav>
+
+      {/* Logos institucionales */}
+      <div className="flex items-center gap-2 px-4 py-3 border-t border-white/10">
+        <img src="/logos/logo-pfce.png" alt="PFCE" className="h-7 w-auto object-contain" />
+        <img src="/logos/logo-unimagdalena.png" alt="Unimagdalena" className="h-7 w-auto object-contain" />
+        <img src="/logos/logo-acreditacion.png" alt="Acreditación" className="h-7 w-auto object-contain" />
+      </div>
 
       {/* Fondo: avatar + cerrar sesión */}
       <div className="px-3 pb-5 border-t border-white/10 pt-4">
