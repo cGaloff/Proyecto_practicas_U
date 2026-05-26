@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { ClipboardList, History, User, LogOut } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { logout } from '../../api/auth'
@@ -11,12 +11,11 @@ const navItems = [
 
 export function Sidebar() {
   const clearAuth = useAuthStore((s) => s.clearAuth)
-  const navigate = useNavigate()
 
   const handleLogout = async () => {
     try { await logout() } catch { /* ignore */ }
     clearAuth()
-    navigate('/login', { replace: true })
+    window.location.href = '/login'
   }
 
   return (
