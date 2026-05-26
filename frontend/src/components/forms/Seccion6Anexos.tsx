@@ -55,6 +55,7 @@ export function Seccion6Anexos({
         numeroGrupo={entrada.numeroGrupo}
         matriculados={entrada.matriculados}
         docenteNombre={entrada.docenteNombre ?? ''}
+        programa={entrada.programa ?? ''}
         paso={6}
         totalPasos={6}
         labelPaso="EVIDENCIAS"
