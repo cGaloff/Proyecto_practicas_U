@@ -11,10 +11,11 @@ interface Props {
   onGuardar: (data: GuardarBorradorRequest) => void
   onAnterior: () => void
   onEnviar: () => Promise<void>
+  esReenvio?: boolean
 }
 
 export function Seccion6Anexos({
-  entrada, guardando, guardadoEn, onGuardar, onAnterior, onEnviar,
+  entrada, guardando, guardadoEn, onGuardar, onAnterior, onEnviar, esReenvio = false,
 }: Props) {
   const [enlace, setEnlace] = useState(entrada.enlaceEvidencias ?? '')
   const [mostrarModal, setMostrarModal] = useState(false)
@@ -131,7 +132,7 @@ export function Seccion6Anexos({
               onClick={() => setMostrarModal(true)}
               className="flex items-center gap-2 px-10 py-3 bg-primary-container text-on-primary font-bold text-body-md rounded-lg hover:bg-primary transition-all shadow-md hover:shadow-lg"
             >
-              Enviar informe
+              {esReenvio ? 'Reenviar informe' : 'Enviar informe'}
               <Send size={16} />
             </button>
           </div>
@@ -160,13 +161,18 @@ export function Seccion6Anexos({
 
             {/* Título */}
             <h2 className="text-headline-md text-on-surface font-bold text-center mb-3">
-              ¿Confirmar envío del informe?
+              {esReenvio ? '¿Confirmar reenvío del informe?' : '¿Confirmar envío del informe?'}
             </h2>
 
             {/* Texto */}
             <p className="text-body-md text-on-surface-variant text-center mb-5">
-              Una vez enviado, <strong className="text-on-surface">no podrás editar
-              este informe</strong>. El coordinador podrá revisarlo y descargarlo.
+              {esReenvio ? (
+                <>El coordinador revisará las <strong className="text-on-surface">correcciones
+                realizadas</strong> y actualizará el estado del informe.</>
+              ) : (
+                <>Una vez enviado, <strong className="text-on-surface">no podrás editar
+                este informe</strong>. El coordinador podrá revisarlo y descargarlo.</>
+              )}
             </p>
 
             {/* Info del grupo */}
@@ -195,11 +201,11 @@ export function Seccion6Anexos({
                 {enviando ? (
                   <>
                     <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                    Enviando...
+                    {esReenvio ? 'Reenviando...' : 'Enviando...'}
                   </>
                 ) : (
                   <>
-                    Confirmar envío
+                    {esReenvio ? 'Confirmar reenvío' : 'Confirmar envío'}
                     <Send size={14} />
                   </>
                 )}

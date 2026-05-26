@@ -7,6 +7,7 @@ import { Seccion3Actividades } from '../../components/forms/Seccion3Actividades'
 import { Seccion4Resultados } from '../../components/forms/Seccion4Resultados'
 import { Seccion5Observaciones } from '../../components/forms/Seccion5Observaciones'
 import { Seccion6Anexos } from '../../components/forms/Seccion6Anexos'
+import { BannerDevuelto } from '../../components/ui/BannerDevuelto'
 import { useEntrada } from '../../hooks/useEntrada'
 import { enviarEntrada } from '../../api/docente'
 import { useGrupos } from '../../hooks/useGrupos'
@@ -39,6 +40,12 @@ export default function Formulario() {
     setSeccionesCompletadas(new Set())
   }, [entradaId])
 
+  useEffect(() => {
+    if (entrada?.estado === 'Enviado') {
+      navigate(`/docente/entradas/${entrada.id}/ver`, { replace: true })
+    }
+  }, [entrada, navigate])
+
   const irASiguiente = async (data: GuardarBorradorRequest) => {
     await guardar(data)
     setSeccionesCompletadas((prev) => new Set([...prev, seccionActiva]))
@@ -50,7 +57,12 @@ export default function Formulario() {
   }
 
   const handleEnviar = async () => {
-    await enviarEntrada(entradaId ?? '')
+    try {
+      await enviarEntrada(entradaId ?? '')
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status
+      if (status !== 409) throw err
+    }
     navigate(`/docente/entradas/${entradaId}/ver`)
   }
 
@@ -80,6 +92,8 @@ export default function Formulario() {
     docenteNombre: entrada.docenteNombre ?? user?.nombreCompleto ?? '',
   }
 
+  const esReenvio = entrada.estado === 'Devuelto'
+
   return (
     <FormularioLayout
       secciones={SECCIONES}
@@ -88,71 +102,85 @@ export default function Formulario() {
       grupos={gruposParaSidebar}
       entradaIdActiva={entradaId ?? ''}
       onCambiarSeccion={setSeccionActiva}
+      estadoEntrada={entrada.estado}
     >
-      {seccionActiva === 1 && (
-        <Seccion1Modalidades
-          entrada={entradaConDatos}
-          guardando={guardando}
-          guardadoEn={guardadoEn}
-          onGuardar={guardarConDebounce}
-          onSiguiente={irASiguiente}
-        />
-      )}
+      <>
+        {esReenvio && entrada.observacionAdmin && (
+          <div className="px-8 pt-6 max-w-5xl mx-auto">
+            <BannerDevuelto
+              observacion={entrada.observacionAdmin}
+              devueltoPor="adminpracticas@unimagdalena.edu.co"
+              devueltoEn={entrada.guardadoEn}
+            />
+          </div>
+        )}
 
-      {seccionActiva === 2 && (
-        <Seccion2Situacion
-          entrada={entradaConDatos}
-          guardando={guardando}
-          guardadoEn={guardadoEn}
-          onGuardar={guardarConDebounce}
-          onSiguiente={irASiguiente}
-          onAnterior={irAAnterior}
-        />
-      )}
+        {seccionActiva === 1 && (
+          <Seccion1Modalidades
+            entrada={entradaConDatos}
+            guardando={guardando}
+            guardadoEn={guardadoEn}
+            onGuardar={guardarConDebounce}
+            onSiguiente={irASiguiente}
+          />
+        )}
 
-      {seccionActiva === 3 && (
-        <Seccion3Actividades
-          entrada={entradaConDatos}
-          guardando={guardando}
-          guardadoEn={guardadoEn}
-          onGuardar={guardarConDebounce}
-          onSiguiente={irASiguiente}
-          onAnterior={irAAnterior}
-        />
-      )}
+        {seccionActiva === 2 && (
+          <Seccion2Situacion
+            entrada={entradaConDatos}
+            guardando={guardando}
+            guardadoEn={guardadoEn}
+            onGuardar={guardarConDebounce}
+            onSiguiente={irASiguiente}
+            onAnterior={irAAnterior}
+          />
+        )}
 
-      {seccionActiva === 4 && (
-        <Seccion4Resultados
-          entrada={entradaConDatos}
-          guardando={guardando}
-          guardadoEn={guardadoEn}
-          onGuardar={guardarConDebounce}
-          onSiguiente={irASiguiente}
-          onAnterior={irAAnterior}
-        />
-      )}
+        {seccionActiva === 3 && (
+          <Seccion3Actividades
+            entrada={entradaConDatos}
+            guardando={guardando}
+            guardadoEn={guardadoEn}
+            onGuardar={guardarConDebounce}
+            onSiguiente={irASiguiente}
+            onAnterior={irAAnterior}
+          />
+        )}
 
-      {seccionActiva === 5 && (
-        <Seccion5Observaciones
-          entrada={entradaConDatos}
-          guardando={guardando}
-          guardadoEn={guardadoEn}
-          onGuardar={guardarConDebounce}
-          onSiguiente={irASiguiente}
-          onAnterior={irAAnterior}
-        />
-      )}
+        {seccionActiva === 4 && (
+          <Seccion4Resultados
+            entrada={entradaConDatos}
+            guardando={guardando}
+            guardadoEn={guardadoEn}
+            onGuardar={guardarConDebounce}
+            onSiguiente={irASiguiente}
+            onAnterior={irAAnterior}
+          />
+        )}
 
-      {seccionActiva === 6 && (
-        <Seccion6Anexos
-          entrada={entradaConDatos}
-          guardando={guardando}
-          guardadoEn={guardadoEn}
-          onGuardar={guardarConDebounce}
-          onAnterior={irAAnterior}
-          onEnviar={handleEnviar}
-        />
-      )}
+        {seccionActiva === 5 && (
+          <Seccion5Observaciones
+            entrada={entradaConDatos}
+            guardando={guardando}
+            guardadoEn={guardadoEn}
+            onGuardar={guardarConDebounce}
+            onSiguiente={irASiguiente}
+            onAnterior={irAAnterior}
+          />
+        )}
+
+        {seccionActiva === 6 && (
+          <Seccion6Anexos
+            entrada={entradaConDatos}
+            guardando={guardando}
+            guardadoEn={guardadoEn}
+            onGuardar={guardarConDebounce}
+            onAnterior={irAAnterior}
+            onEnviar={handleEnviar}
+            esReenvio={esReenvio}
+          />
+        )}
+      </>
     </FormularioLayout>
   )
 }

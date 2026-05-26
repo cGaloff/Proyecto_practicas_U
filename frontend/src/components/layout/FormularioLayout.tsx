@@ -8,6 +8,7 @@ interface Props {
   grupos: Array<{ entradaId: string; practica: string; numeroGrupo: number; estado: string }>
   entradaIdActiva: string
   onCambiarSeccion: (seccion: number) => void
+  estadoEntrada?: string
   children: React.ReactNode
 }
 
@@ -18,6 +19,7 @@ export function FormularioLayout({
   grupos,
   entradaIdActiva,
   onCambiarSeccion,
+  estadoEntrada,
   children,
 }: Props) {
   return (
@@ -36,6 +38,7 @@ export function FormularioLayout({
           grupos={grupos}
           entradaIdActiva={entradaIdActiva}
           onCambiarSeccion={onCambiarSeccion}
+          estadoEntrada={estadoEntrada}
         />
 
         {/* CONTENIDO PRINCIPAL */}
