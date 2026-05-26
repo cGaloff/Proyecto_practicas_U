@@ -58,7 +58,7 @@ export default function EntradaEnviada() {
       const url = window.URL.createObjectURL(new Blob([res.data as BlobPart]))
       const a = document.createElement('a')
       a.href = url
-      a.download = `informe-${entrada.practica}-grupo${entrada.numeroGrupo}.docx`
+      a.download = `informe-${entrada.practica}-grupo${entrada.numeroGrupo}.pdf`
       a.click()
       window.URL.revokeObjectURL(url)
     } finally {
@@ -103,7 +103,7 @@ export default function EntradaEnviada() {
           className="flex items-center gap-2 px-5 py-2.5 bg-primary-container text-on-primary font-bold text-body-sm rounded-lg hover:bg-primary transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download size={15} />
-          {descargando ? 'Descargando...' : 'Descargar .docx'}
+          {descargando ? 'Descargando...' : 'Descargar .pdf'}
         </button>
       </div>
 

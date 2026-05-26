@@ -68,7 +68,7 @@ export function Dashboard() {
     const url = window.URL.createObjectURL(new Blob([res.data as BlobPart]))
     const a = document.createElement('a')
     a.href = url
-    a.download = `informe-${g.practica}-grupo${g.numeroGrupo}.docx`
+    a.download = `informe-${g.practica}-grupo${g.numeroGrupo}.pdf`
     a.click()
     window.URL.revokeObjectURL(url)
   }
@@ -168,11 +168,11 @@ export function Dashboard() {
                       {g.estado === 'Enviado' && (
                         <button
                           onClick={() => handleDescargar(g)}
-                          title="Descargar .docx"
+                          title="Descargar .pdf"
                           className="flex items-center gap-1 px-3 py-1.5 text-label-caps font-semibold rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition"
                         >
                           <Download size={13} />
-                          .docx
+                          .pdf
                         </button>
                       )}
                     </div>

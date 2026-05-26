@@ -24,6 +24,7 @@ builder.Services.AddSingleton<IPasswordService, PasswordService>();
 
 // ── Word generation ────────────────────────────────────────
 builder.Services.AddScoped<IWordGeneratorService, WordGeneratorService>();
+builder.Services.AddScoped<IPdfConverterService, PdfConverterService>();
 
 // ── JWT Bearer authentication ──────────────────────────────
 var jwtSecret = builder.Configuration["Jwt:Secret"]

@@ -329,7 +329,8 @@ public class DocenteController(AppDbContext db) : ControllerBase
     [ProducesResponseType(409)]
     public async Task<IActionResult> Descargar(
         Guid id,
-        [FromServices] IWordGeneratorService wordService)
+        [FromServices] IWordGeneratorService wordService,
+        [FromServices] IPdfConverterService pdfService)
     {
         var docenteId = GetDocenteId();
         if (docenteId == null) return Unauthorized();
@@ -364,23 +365,22 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 Mensaje = "Solo se puede descargar una entrada enviada."
             });
 
-        var bytes = await wordService.GenerarAsync(
+        var docxBytes = await wordService.GenerarAsync(
             programa:     entrada.GrupoAsignado.Programa.Nombre,
             semestre:     entrada.Informe.Semestre,
             coordinador:  entrada.Informe.CoordinadorNombre,
             fechaEntrega: entrada.Informe.FechaEntrega,
             entradas:     [entrada]);
 
+        var pdfBytes = await pdfService.ConvertirDocxAPdfAsync(docxBytes);
+
         var practica  = entrada.GrupoAsignado.Practica;
         var grupo     = entrada.GrupoAsignado.NumeroGrupo;
         var docNombre = entrada.GrupoAsignado.Docente.NombreCompleto
             .Replace(" ", "_").ToLower();
-        var fileName  = $"informe_PPI_{practica}_grupo{grupo}_{docNombre}.docx";
+        var fileName  = $"informe_PPI_{practica}_grupo{grupo}_{docNombre}.pdf";
 
-        return File(
-            bytes,
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            fileName);
+        return File(pdfBytes, "application/pdf", fileName);
     }
 
     // ── Helpers privados ──────────────────────────────────────
