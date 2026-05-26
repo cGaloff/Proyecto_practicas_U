@@ -13,7 +13,7 @@ export function AdminNavbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-      <span className="font-bold text-gray-800 text-base">PPI Unimagdalena</span>
+      <span className="font-bold text-gray-800 text-base">Practicas FCE</span>
 
       <div className="flex items-center gap-4">
         <Bell size={18} className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors" />

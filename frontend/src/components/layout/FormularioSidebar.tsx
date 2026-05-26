@@ -44,11 +44,16 @@ export function FormularioSidebar({
     <aside className="fixed left-0 top-0 h-screen w-[224px] bg-primary flex flex-col py-8 z-20">
 
       {/* 1. LOGO / TÍTULO */}
-      <div className="px-5 mb-8">
-        <h1 className="text-headline-md text-on-primary font-semibold">EduDashboard</h1>
-        <p className="text-label-caps text-on-primary-container opacity-80 uppercase tracking-widest mt-1">
-          Gestión Académica
-        </p>
+      <div className="px-5 mb-8 flex items-center gap-3">
+        <img
+          src="/logos/logo-pfce.png"
+          alt="PFCE"
+          className="w-10 h-10 object-contain flex-shrink-0"
+        />
+        <div className="min-w-0">
+          <h1 className="text-white text-base font-semibold leading-tight truncate">Practicas FCE</h1>
+          <p className="text-white/65 text-[11px] mt-0.5 truncate">Universidad del Magdalena</p>
+        </div>
       </div>
 
       <div className="flex-1 flex flex-col overflow-y-auto px-3">
@@ -123,8 +128,14 @@ export function FormularioSidebar({
         </div>
       </div>
 
+      {/* LOGOS INSTITUCIONALES */}
+      <div className="flex items-center gap-2 px-4 py-3 border-t border-white/10">
+        <img src="/logos/logo-unimagdalena.png" alt="Unimagdalena" className="h-8 w-auto object-contain" />
+        <img src="/logos/logo-acreditacion.png" alt="Acreditación" className="h-8 w-auto object-contain" />
+      </div>
+
       {/* 4. BOTÓN VOLVER AL INICIO */}
-      <div className="px-3 mt-4">
+      <div className="px-3">
         <button
           onClick={() => navigate('/docente')}
           className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-primary-fixed/50 hover:text-primary-fixed/80 hover:bg-white/5 transition-all duration-200 text-left"
