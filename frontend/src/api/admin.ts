@@ -8,6 +8,9 @@ export const getProgramas = () =>
 export const getProgramaEntradas = (id: string) =>
   client.get<ProgramaEntradas>(`/admin/programas/${id}/entradas`).then((r) => r.data)
 
+export const getDocentes = () =>
+  client.get<DocenteConEntradas[]>('/admin/docentes').then((r) => r.data)
+
 export const getDocenteEntradas = (id: string) =>
   client.get<DocenteConEntradas>(`/admin/docentes/${id}/entradas`).then((r) => r.data)
 
