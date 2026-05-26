@@ -21,3 +21,6 @@ export const enviarEntrada = (id: string) =>
 
 export const descargarEntrada = (id: string) =>
   client.get(`/docente/entradas/${id}/descargar`, { responseType: 'blob' })
+
+export const getEntradaDetalleFull = (id: string) =>
+  client.get<EntradaDetalleDto>(`/docente/entradas/${id}`)

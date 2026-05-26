@@ -68,6 +68,9 @@ export interface Seccion5BData {
 
 export interface EntradaDetalleDto extends EntradaDetalle {
   docenteNombre?: string
+  programa?: string
+  semestre?: string
+  firmaDigital?: string | null
   enlaceEvidencias?: string | null
   seccion2B?: Seccion2BData | null
   seccion3?: Seccion3Data | null
