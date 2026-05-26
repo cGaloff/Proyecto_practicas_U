@@ -8,11 +8,12 @@ import { Seccion4Resultados } from '../../components/forms/Seccion4Resultados'
 import { Seccion5Observaciones } from '../../components/forms/Seccion5Observaciones'
 import { Seccion6Anexos } from '../../components/forms/Seccion6Anexos'
 import { BannerDevuelto } from '../../components/ui/BannerDevuelto'
+import { ModalEnvioExitoso } from '../../components/ui/ModalEnvioExitoso'
 import { useEntrada } from '../../hooks/useEntrada'
-import { enviarEntrada } from '../../api/docente'
+import { enviarEntrada, getGrupos } from '../../api/docente'
 import { useGrupos } from '../../hooks/useGrupos'
 import { useAuthStore } from '../../store/authStore'
-import type { GuardarBorradorRequest } from '../../types/docente'
+import type { GuardarBorradorRequest, GrupoConEntradaDto } from '../../types/docente'
 
 const SECCIONES = [
   { id: 1, nombre: 'Modalidades' },
@@ -30,6 +31,8 @@ export default function Formulario() {
 
   const [seccionActiva, setSeccionActiva] = useState(1)
   const [seccionesCompletadas, setSeccionesCompletadas] = useState<Set<number>>(new Set())
+  const [mostrarModalExito, setMostrarModalExito] = useState(false)
+  const [gruposRestantes, setGruposRestantes] = useState<GrupoConEntradaDto[]>([])
 
   const { entrada, loading, error, guardando, guardadoEn, guardar, guardarConDebounce } =
     useEntrada(entradaId ?? '')
@@ -59,11 +62,22 @@ export default function Formulario() {
   const handleEnviar = async () => {
     try {
       await enviarEntrada(entradaId ?? '')
+
+      const gruposActualizados = await getGrupos()
+      const pendientes = gruposActualizados.data.filter(
+        (g) => g.estado !== 'Enviado' && g.entradaId !== null
+      )
+
+      if (pendientes.length > 0) {
+        setGruposRestantes(pendientes)
+        setMostrarModalExito(true)
+      } else {
+        navigate('/docente')
+      }
     } catch (err: unknown) {
-      const status = (err as { response?: { status?: number } })?.response?.status
-      if (status !== 409) throw err
+      const msg = (err as { response?: { data?: { mensaje?: string } } })?.response?.data?.mensaje
+      alert(msg ?? 'Error al enviar.')
     }
-    navigate(`/docente/entradas/${entradaId}/ver`)
   }
 
   const gruposParaSidebar = grupos
@@ -95,6 +109,7 @@ export default function Formulario() {
   const esReenvio = entrada.estado === 'Devuelto'
 
   return (
+    <>
     <FormularioLayout
       secciones={SECCIONES}
       seccionActiva={seccionActiva}
@@ -182,5 +197,21 @@ export default function Formulario() {
         )}
       </>
     </FormularioLayout>
+
+    {mostrarModalExito && entrada && (
+      <ModalEnvioExitoso
+        grupoEnviado={{
+          practica: entrada.practica,
+          numeroGrupo: entrada.numeroGrupo,
+        }}
+        gruposRestantes={gruposRestantes}
+        onIrSiguiente={(id) => {
+          setMostrarModalExito(false)
+          navigate(`/docente/entradas/${id}`)
+        }}
+        onIrDashboard={() => navigate('/docente')}
+      />
+    )}
+    </>
   )
 }

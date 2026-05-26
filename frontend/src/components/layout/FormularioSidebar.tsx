@@ -75,10 +75,20 @@ export function FormularioSidebar({
                         : 'text-primary-fixed/70 hover:text-primary-fixed hover:bg-white/5'
                     }`}
                   >
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      activo ? 'bg-secondary-fixed-dim' : 'bg-primary-fixed/30'
-                    }`} />
-                    <span className="text-label-caps leading-tight">
+                    {g.estado === 'Enviado' ? (
+                      <span className="flex items-center justify-center w-4 h-4 rounded-full bg-success flex-shrink-0">
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                          <path d="M1.5 4L3 5.5L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </span>
+                    ) : g.estado === 'Devuelto' ? (
+                      <span className="w-2 h-2 rounded-full bg-danger flex-shrink-0" />
+                    ) : activo ? (
+                      <span className="w-2 h-2 rounded-full bg-white flex-shrink-0" />
+                    ) : (
+                      <span className="w-2 h-2 rounded-full border border-white/50 flex-shrink-0" />
+                    )}
+                    <span className={`text-label-caps leading-tight ${activo ? 'text-white font-medium' : ''}`}>
                       Práctica {g.practica} · Grupo {g.numeroGrupo}
                     </span>
                   </button>
