@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircle, XCircle, ChevronUp, ChevronDown, ArrowRight } from 'lucide-react'
+import { CheckCircle, ChevronUp, ChevronDown, ArrowRight } from 'lucide-react'
 import { SeccionHeader } from './SeccionHeader'
 import { AutosaveIndicator } from '../ui/AutosaveIndicator'
 import type { EntradaDetalleDto, GuardarBorradorRequest } from '../../types/docente'
@@ -36,7 +36,6 @@ export function Seccion1Modalidades({
   })
 
   const suma = Object.values(valores).reduce((a, b) => a + b, 0)
-  const coincide = suma === entrada.matriculados
 
   const handleChange = (campo: Campo, valor: number) => {
     const nuevos = { ...valores, [campo]: Math.max(0, valor) }
@@ -70,7 +69,7 @@ export function Seccion1Modalidades({
         <div className="px-8 py-8 border-b border-outline-variant bg-surface-container-lowest">
           <p className="text-body-md text-on-surface-variant">
             Ingresa el número de estudiantes por modalidad.
-            La suma debe ser igual al total de matriculados ({entrada.matriculados}).
+            El total ingresado será el que se registre en el informe (puede diferir de los {entrada.matriculados} matriculados del sistema).
           </p>
         </div>
 
@@ -99,36 +98,21 @@ export function Seccion1Modalidades({
             ))}
           </div>
 
-          {/* Indicador de suma */}
-          {coincide ? (
-            <div className="mt-12 bg-emerald-50 border border-emerald-100 rounded-lg p-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0">
-                <CheckCircle size={22} />
-              </div>
-              <div>
-                <p className="text-emerald-900 font-semibold text-body-md">
-                  Total ingresado: <span className="text-emerald-600">{suma} / {entrada.matriculados}</span>
-                </p>
-                <p className="text-emerald-700/80 text-body-sm">
-                  Coincide con el total del grupo asignado por el sistema.
-                </p>
-              </div>
+          {/* Indicador de suma — informativo, no bloqueante */}
+          <div className="mt-12 bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+              <CheckCircle size={22} />
             </div>
-          ) : (
-            <div className="mt-12 bg-red-50 border border-red-100 rounded-lg p-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 flex-shrink-0">
-                <XCircle size={22} />
-              </div>
-              <div>
-                <p className="text-red-900 font-semibold text-body-md">
-                  Total ingresado: <span className="text-red-600">{suma} / {entrada.matriculados}</span>
-                </p>
-                <p className="text-red-700/80 text-body-sm">
-                  No coincide. Ajusta los valores hasta completar {entrada.matriculados} estudiantes.
-                </p>
-              </div>
+            <div>
+              <p className="text-blue-900 font-semibold text-body-md">
+                Total ingresado: <span className="text-blue-600">{suma}</span>
+                <span className="text-blue-400 font-normal text-body-sm ml-2">(matriculados en sistema: {entrada.matriculados})</span>
+              </p>
+              <p className="text-blue-700/80 text-body-sm">
+                Este total será el que quede registrado en el informe.
+              </p>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Footer */}
