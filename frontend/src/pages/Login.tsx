@@ -181,7 +181,7 @@ export function Login() {
             </span>
             <span className="flex items-center gap-2 text-body-sm text-on-surface-variant">
               <MailIcon size={14} className="text-outline flex-shrink-0" />
-              cienciaseducacion@unimagdalena.edu.co
+              practicasfce@unimagdalena.edu.co
             </span>
             <span className="flex items-center gap-2 text-body-sm text-on-surface-variant">
               <MailIcon size={14} className="text-outline flex-shrink-0 opacity-0" />

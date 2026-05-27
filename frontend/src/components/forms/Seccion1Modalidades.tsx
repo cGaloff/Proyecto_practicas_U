@@ -106,7 +106,6 @@ export function Seccion1Modalidades({
             <div>
               <p className="text-blue-900 font-semibold text-body-md">
                 Total ingresado: <span className="text-blue-600">{suma}</span>
-                <span className="text-blue-400 font-normal text-body-sm ml-2">(matriculados en sistema: {entrada.matriculados})</span>
               </p>
               <p className="text-blue-700/80 text-body-sm">
                 Este total será el que quede registrado en el informe.
