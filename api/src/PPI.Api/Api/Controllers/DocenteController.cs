@@ -289,7 +289,7 @@ public class DocenteController(AppDbContext db) : ControllerBase
         entrada.EnviadoEn    = DateTime.UtcNow;
         entrada.GuardadoEn   = DateTime.UtcNow;
         entrada.FirmaDigital = $"Enviado digitalmente el " +
-                               $"{DateTime.UtcNow:dd/MM/yyyy HH:mm} UTC " +
+                               $"{ObtenerHoraBogota():dd/MM/yyyy HH:mm} hora Colombia " +
                                $"por {correo}";
 
         // Recalcular el estado del informe consolidado del programa
@@ -467,5 +467,18 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 : EstadoInforme.Pendiente;
 
         informe.ActualizadoEn = DateTime.UtcNow;
+    }
+
+    private static DateTime ObtenerHoraBogota()
+    {
+        try
+        {
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("America/Bogota");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+        }
+        catch
+        {
+            return DateTime.UtcNow.AddHours(-5);
+        }
     }
 }
