@@ -226,7 +226,7 @@ public class WordGeneratorService : IWordGeneratorService
     private static Dictionary<string, string> MapearFila2A(EntradaInforme e)
     {
         var d = MapComun(e);
-        d["{{FILA.TOTAL_EST}}"] = e.GrupoAsignado?.Matriculados.ToString() ?? "0";
+        d["{{FILA.TOTAL_EST}}"] = SumaSeccion2B(e.Seccion2B).ToString();
         return d;
     }
 
@@ -240,9 +240,13 @@ public class WordGeneratorService : IWordGeneratorService
         d["{{FILA.MOD_LABORAL}}"]    = s?.VinculacionLaboral.ToString()  ?? "0";
         d["{{FILA.MOD_CASA}}"]       = s?.EnCasa.ToString()             ?? "0";
         d["{{FILA.MOD_OTROS_MUN}}"]  = s?.OtrosMunicipios.ToString()    ?? "0";
-        d["{{FILA.MOD_TOTAL}}"]      = e.GrupoAsignado?.Matriculados.ToString() ?? "0";
+        d["{{FILA.MOD_TOTAL}}"]      = SumaSeccion2B(s).ToString();
         return d;
     }
+
+    private static int SumaSeccion2B(Seccion2B? s) =>
+        s == null ? 0
+        : s.Publica + s.Privada + s.OngSocial + s.VinculacionLaboral + s.EnCasa + s.OtrosMunicipios;
 
     private static Dictionary<string, string> MapearFila3(EntradaInforme e)
     {
