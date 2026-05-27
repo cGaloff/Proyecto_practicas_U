@@ -288,8 +288,10 @@ public class DocenteController(AppDbContext db) : ControllerBase
         entrada.Estado       = EstadoEntrada.Enviado;
         entrada.EnviadoEn    = DateTime.UtcNow;
         entrada.GuardadoEn   = DateTime.UtcNow;
+        var horaBogota = ObtenerHoraBogota();
+        var ampm       = horaBogota.Hour < 12 ? "a.m." : "p.m.";
         entrada.FirmaDigital = $"Enviado digitalmente el " +
-                               $"{ObtenerHoraBogota():dd/MM/yyyy HH:mm} hora Colombia " +
+                               $"{horaBogota:dd/MM/yyyy} {horaBogota:hh:mm} {ampm} " +
                                $"por {correo}";
 
         // Recalcular el estado del informe consolidado del programa
