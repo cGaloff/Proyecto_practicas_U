@@ -32,6 +32,7 @@ public class DocenteController(AppDbContext db) : ControllerBase
 
         var grupos = await db.GruposAsignados
             .Include(g => g.EntradaInforme)
+            .Include(g => g.Programa)
             .Where(g => g.DocenteId == docenteId)
             .OrderBy(g => g.Practica)
             .ThenBy(g => g.NumeroGrupo)
@@ -42,6 +43,7 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 NumeroGrupo      = g.NumeroGrupo,
                 Matriculados     = g.Matriculados,
                 Estado           = g.EntradaInforme.Estado.ToString(),
+                Programa         = g.Programa.Nombre,
                 GuardadoEn       = g.EntradaInforme.GuardadoEn,
                 EnviadoEn        = g.EntradaInforme.EnviadoEn,
                 ObservacionAdmin = g.EntradaInforme.ObservacionAdmin

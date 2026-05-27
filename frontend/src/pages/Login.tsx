@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useNavigate } from 'react-router-dom'
 import { login } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
 
@@ -13,7 +12,6 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 export function Login() {
-  const navigate = useNavigate()
   const setAuth = useAuthStore((s) => s.setAuth)
 
   const {
@@ -27,7 +25,7 @@ export function Login() {
     try {
       const res = await login(data)
       setAuth(res.data)
-      navigate(res.data.rol === 'Admin' ? '/admin' : '/docente', { replace: true })
+      window.location.href = res.data.rol === 'Admin' ? '/admin' : '/docente'
     } catch {
       setError('root', { message: 'Correo o contraseña incorrectos.' })
     }

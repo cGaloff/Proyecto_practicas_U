@@ -56,6 +56,7 @@ export function Seccion1Modalidades({
         numeroGrupo={entrada.numeroGrupo}
         matriculados={entrada.matriculados}
         docenteNombre={entrada.docenteNombre ?? ''}
+        programa={entrada.programa ?? ''}
         paso={1}
         totalPasos={6}
         labelPaso="DISTRIBUCIÓN POR MODALIDAD"

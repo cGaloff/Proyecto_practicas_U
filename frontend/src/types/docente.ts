@@ -6,6 +6,7 @@ export interface GrupoConEntradaDto {
   numeroGrupo: number
   matriculados: number
   estado: EstadoEntrada
+  programa: string
   guardadoEn: string | null
   enviadoEn: string | null
   observacionAdmin: string | null

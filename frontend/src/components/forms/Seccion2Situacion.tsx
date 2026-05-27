@@ -86,6 +86,7 @@ export function Seccion2Situacion({
         numeroGrupo={entrada.numeroGrupo}
         matriculados={entrada.matriculados}
         docenteNombre={entrada.docenteNombre ?? ''}
+        programa={entrada.programa ?? ''}
         paso={2}
         totalPasos={6}
         labelPaso="SITUACIÓN ACADÉMICA"

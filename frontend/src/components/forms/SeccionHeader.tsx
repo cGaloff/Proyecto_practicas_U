@@ -1,14 +1,37 @@
-import { Lock } from 'lucide-react'
+import { BookOpen, Hash, GraduationCap, Users, User } from 'lucide-react'
 
 interface SeccionHeaderProps {
   practica: string
   numeroGrupo: number
   matriculados: number
   docenteNombre: string
+  programa: string
   paso: number
   totalPasos: number
   labelPaso: string
   tituloSeccion: string
+}
+
+function InfoCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType
+  label: string
+  value: string
+}) {
+  return (
+    <div className="flex items-start gap-3 bg-surface-container-low border border-outline-variant/40 rounded-xl p-4">
+      <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+        <Icon size={17} className="text-primary" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-label-caps text-outline uppercase mb-0.5">{label}</p>
+        <p className="text-body-sm font-semibold text-on-surface leading-snug">{value}</p>
+      </div>
+    </div>
+  )
 }
 
 export function SeccionHeader({
@@ -16,6 +39,7 @@ export function SeccionHeader({
   numeroGrupo,
   matriculados,
   docenteNombre,
+  programa,
   paso,
   totalPasos,
   labelPaso,
@@ -23,41 +47,18 @@ export function SeccionHeader({
 }: SeccionHeaderProps) {
   return (
     <div className="mb-8">
-      {/* Barra de datos del grupo — solo lectura */}
-      <div className="bg-surface-container-low border border-outline-variant/50 rounded-xl p-8 mb-8 relative">
-        <div className="absolute top-6 right-6 flex items-center gap-2 text-outline/60">
-          <span className="text-[10px] font-medium uppercase tracking-tighter hidden group-hover:block">
-            Sistema bloqueado
-          </span>
-          <Lock size={18} className="cursor-help" />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
-            <p className="text-label-caps text-outline uppercase mb-1.5">Práctica</p>
-            <p className="text-headline-md text-on-surface">{practica}</p>
-          </div>
-          <div>
-            <p className="text-label-caps text-outline uppercase mb-1.5">Grupo N°</p>
-            <p className="text-headline-md text-on-surface">Grupo {numeroGrupo}</p>
-          </div>
-          <div>
-            <p className="text-label-caps text-outline uppercase mb-1.5">Total Matriculados</p>
-            <p className="text-headline-md text-on-surface">{matriculados} estudiantes</p>
-          </div>
-          <div>
-            <p className="text-label-caps text-outline uppercase mb-1.5">Docente Principal</p>
-            <p className="text-headline-md text-on-surface">{docenteNombre}</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
+        <InfoCard icon={BookOpen} label="Práctica" value={practica} />
+        <InfoCard icon={Hash} label="Grupo" value={`Grupo ${numeroGrupo}`} />
+        <InfoCard icon={GraduationCap} label="Programa" value={programa || '—'} />
+        <InfoCard icon={Users} label="Matriculados" value={`${matriculados} estudiantes`} />
+        <InfoCard icon={User} label="Docente" value={docenteNombre} />
       </div>
 
-      {/* Label del paso */}
       <p className="text-label-caps text-outline uppercase tracking-wider mb-3">
         PASO {paso} DE {totalPasos} · {labelPaso}
       </p>
 
-      {/* Título de la sección */}
       <h1 className="text-headline-md text-primary-container">
         Sección {paso} · {tituloSeccion}
       </h1>
