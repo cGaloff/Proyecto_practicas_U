@@ -173,12 +173,19 @@ export function Login() {
               Línea Gratuita Nacional: 01 8000 180 504
             </span>
             <span className="flex items-center gap-2 text-body-sm text-on-surface-variant">
-              <MapPin size={14} className="text-outline flex-shrink-0" />
-              Calle 29H3 No 22-01, Santa Marta D.T.C.H. — Colombia. Código Postal 470004
+              <MapPin size={14} className="text-outline flex-shrink-0 mt-0.5" />
+              <span>
+                Calle 29H3 No. 22-01, Edificio Sierra Nevada Norte, Piso 2<br />
+                Santa Marta - Colombia &nbsp;·&nbsp; PBX: (57-605) 438 1000 Ext. 2202
+              </span>
             </span>
             <span className="flex items-center gap-2 text-body-sm text-on-surface-variant">
               <MailIcon size={14} className="text-outline flex-shrink-0" />
-              ciudadano@unimagdalena.edu.co
+              cienciaseducacion@unimagdalena.edu.co
+            </span>
+            <span className="flex items-center gap-2 text-body-sm text-on-surface-variant">
+              <MailIcon size={14} className="text-outline flex-shrink-0 opacity-0" />
+              www.unimagdalena.edu.co
             </span>
           </div>
           <div className="border-t border-outline-variant/30 pt-3 mt-2">
