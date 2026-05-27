@@ -16,7 +16,7 @@ export function AdminSidebar() {
 
   const handleLogout = () => {
     clearAuth()
-    navigate('/login')
+    window.location.href = '/login'
   }
 
   const initials = user?.nombreCompleto
@@ -68,12 +68,12 @@ export function AdminSidebar() {
       </nav>
 
       {/* Banner institucional */}
-      <div className="px-4 py-4 border-t border-white/10">
+      <div className="px-3 pb-3 border-t border-white/10 pt-3">
         <img
           src="/logos/banner.png"
           alt="Unimagdalena acreditada"
-          className="w-full max-w-[180px] object-contain opacity-90"
-          style={{ filter: 'brightness(1.1)' }}
+          className="w-full object-contain"
+          style={{ maxHeight: '80px' }}
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
       </div>
