@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { login } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck } from 'lucide-react'
 
 const schema = z.object({
   correo: z.string().email('Ingresa un correo válido'),
@@ -12,6 +14,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 export function Login() {
+  const [verPassword, setVerPassword] = useState(false)
   const setAuth = useAuthStore((s) => s.setAuth)
 
   const {
@@ -32,53 +35,130 @@ export function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-headline-lg text-on-surface">Portal Académico</h1>
-          <p className="text-body-sm text-on-surface-variant mt-1">Prácticas Pedagógicas · UniMag</p>
-        </div>
+    <div className="min-h-screen bg-surface-container-low flex flex-col items-center justify-center px-4 py-8">
 
-        <div className="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-sm">
-          <h2 className="text-headline-md text-on-surface mb-6">Iniciar sesión</h2>
+      {/* Logos institucionales */}
+      <div className="flex items-center gap-6 mb-8">
+        <img
+          src="/logos/pfce.png"
+          alt="PFCE"
+          className="h-16 w-16 object-contain"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
+        <div className="w-px h-10 bg-outline-variant" />
+        <img
+          src="/logos/unimag.png"
+          alt="Universidad del Magdalena"
+          className="h-12 object-contain"
+          style={{ maxWidth: '140px' }}
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
+      </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-label-caps text-on-surface-variant uppercase">Correo institucional</label>
+      {/* Título */}
+      <div className="text-center mb-8">
+        <h1 className="text-headline-lg text-on-surface font-bold">Portal Académico</h1>
+        <p className="text-body-sm text-on-surface-variant mt-2">
+          Prácticas Pedagógicas · Universidad del Magdalena
+        </p>
+      </div>
+
+      {/* Card del formulario */}
+      <div
+        className="w-full max-w-md bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/40"
+        style={{ boxShadow: '0px 4px 12px rgba(0,0,0,0.06)' }}
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
+
+          {/* Campo correo */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-label-caps text-on-surface-variant uppercase">
+              Correo Institucional
+            </label>
+            <div className="relative group">
+              <Mail
+                size={17}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors"
+              />
               <input
                 type="email"
                 autoComplete="email"
+                placeholder="usuario@unimagdalena.edu.co"
                 {...register('correo')}
-                className="h-11 px-3 rounded-lg border border-outline-variant bg-surface text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
+                className="w-full pl-10 pr-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none text-body-md text-on-surface"
               />
-              {errors.correo && <p className="text-xs text-error">{errors.correo.message}</p>}
             </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-label-caps text-on-surface-variant uppercase">Contraseña</label>
-              <input
-                type="password"
-                autoComplete="current-password"
-                {...register('password')}
-                className="h-11 px-3 rounded-lg border border-outline-variant bg-surface text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition"
-              />
-              {errors.password && <p className="text-xs text-error">{errors.password.message}</p>}
-            </div>
-
-            {errors.root && (
-              <p className="text-sm text-error bg-error/10 px-3 py-2 rounded-lg">{errors.root.message}</p>
+            {errors.correo && (
+              <p className="text-xs text-error">{errors.correo.message}</p>
             )}
+          </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="mt-2 h-11 bg-primary text-on-primary font-semibold rounded-lg hover:bg-primary-container transition disabled:opacity-60"
-            >
-              {isSubmitting ? 'Ingresando…' : 'Ingresar'}
-            </button>
-          </form>
+          {/* Campo contraseña */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-label-caps text-on-surface-variant uppercase">
+              Contraseña
+            </label>
+            <div className="relative group">
+              <Lock
+                size={17}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors"
+              />
+              <input
+                type={verPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                placeholder="••••••••"
+                {...register('password')}
+                className="w-full pl-10 pr-12 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none text-body-md text-on-surface"
+              />
+              <button
+                type="button"
+                onClick={() => setVerPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
+                tabIndex={-1}
+              >
+                {verPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-xs text-error">{errors.password.message}</p>
+            )}
+          </div>
+
+          {/* Error general */}
+          {errors.root && (
+            <p className="text-sm text-error bg-error-container/40 px-3 py-2.5 rounded-lg border border-error/20">
+              {errors.root.message}
+            </p>
+          )}
+
+          {/* Botón */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="mt-1 w-full bg-primary text-on-primary py-3 px-6 rounded-lg font-semibold hover:bg-primary-container transition-all flex items-center justify-center gap-2 group disabled:opacity-60"
+          >
+            {isSubmitting ? 'Ingresando…' : (
+              <>
+                Ingresar
+                <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Nota de seguridad */}
+        <div className="mt-6 flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+          <ShieldCheck size={18} className="text-primary flex-shrink-0 mt-0.5" />
+          <p className="text-body-sm text-on-surface-variant">
+            Conexión segura. Cierra tu sesión al finalizar en equipos compartidos.
+          </p>
         </div>
       </div>
+
+      {/* Footer */}
+      <p className="mt-8 text-label-caps text-outline text-center">
+        © 2025 Facultad de Ciencias de la Educación · UniMag
+      </p>
     </div>
   )
 }
