@@ -16,7 +16,7 @@ export function Navbar() {
     <header className="h-16 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30 fixed top-0 left-[260px] right-0 z-10 flex items-center justify-between px-8">
       <div>
         <span className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
-          Semestre 2025-I
+          Semestre 2026-2
         </span>
       </div>
 
