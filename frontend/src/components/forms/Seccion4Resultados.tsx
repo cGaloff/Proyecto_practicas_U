@@ -77,6 +77,7 @@ export function Seccion4Resultados({
         numeroGrupo={entrada.numeroGrupo}
         matriculados={entrada.matriculados}
         docenteNombre={entrada.docenteNombre ?? ''}
+        programa={entrada.programa ?? ''}
         paso={4}
         totalPasos={6}
         labelPaso="INNOVACIÓN"

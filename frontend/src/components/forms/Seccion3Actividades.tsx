@@ -100,6 +100,7 @@ export function Seccion3Actividades({
         numeroGrupo={entrada.numeroGrupo}
         matriculados={entrada.matriculados}
         docenteNombre={entrada.docenteNombre ?? ''}
+        programa={entrada.programa ?? ''}
         paso={3}
         totalPasos={6}
         labelPaso="PROYECCIÓN INSTITUCIONAL"

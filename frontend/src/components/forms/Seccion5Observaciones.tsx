@@ -62,6 +62,7 @@ export function Seccion5Observaciones({
         numeroGrupo={entrada.numeroGrupo}
         matriculados={entrada.matriculados}
         docenteNombre={entrada.docenteNombre ?? ''}
+        programa={entrada.programa ?? ''}
         paso={5}
         totalPasos={6}
         labelPaso="LOGROS Y RETOS"

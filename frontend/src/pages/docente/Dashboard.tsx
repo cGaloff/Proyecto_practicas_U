@@ -131,6 +131,7 @@ export function Dashboard() {
             <thead>
               <tr className="border-b border-outline-variant/30">
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Práctica</th>
+                <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Programa</th>
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Grupo</th>
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Matriculados</th>
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Estado</th>
@@ -142,6 +143,7 @@ export function Dashboard() {
               {sorted.map((g, i) => (
                 <tr key={g.entradaId ?? `${g.practica}-${g.numeroGrupo}`} className={i % 2 === 0 ? '' : 'bg-surface-container/20'}>
                   <td className="px-6 py-4 text-body-sm text-on-surface font-medium">{g.practica}</td>
+                  <td className="px-6 py-4 text-body-sm text-on-surface-variant">{g.programa || '—'}</td>
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">Grupo {g.numeroGrupo}</td>
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">{g.matriculados}</td>
                   <td className="px-6 py-4">
@@ -181,7 +183,7 @@ export function Dashboard() {
               ))}
               {grupos.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-on-surface-variant text-body-sm">
+                  <td colSpan={7} className="px-6 py-10 text-center text-on-surface-variant text-body-sm">
                     No tienes grupos asignados este semestre.
                   </td>
                 </tr>
