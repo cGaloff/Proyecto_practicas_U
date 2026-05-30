@@ -272,9 +272,9 @@ public class WordGeneratorService : IWordGeneratorService
     private static Dictionary<string, string> MapearFila4B(EntradaInforme e)
     {
         var d = MapComun(e);
-        d["{{FILA.INN_ESTRATEGIAS}}"]   = e.Seccion4B?.Estrategias   ?? "";
-        d["{{FILA.INN_PUBLICACIONES}}"] = e.Seccion4B?.Publicaciones ?? "";
-        d["{{FILA.INN_OTRAS}}"]         = e.Seccion4B?.Otras         ?? "";
+        d["{{FILA.INN_ESTRATEGIAS}}"]   = TextoONo(e.Seccion4B?.Estrategias);
+        d["{{FILA.INN_PUBLICACIONES}}"] = TextoONo(e.Seccion4B?.Publicaciones);
+        d["{{FILA.INN_OTRAS}}"]         = TextoONo(e.Seccion4B?.Otras);
         return d;
     }
 
@@ -299,4 +299,7 @@ public class WordGeneratorService : IWordGeneratorService
         if (item == null || !item.Aplica) return "No";
         return string.IsNullOrWhiteSpace(item.Descripcion) ? "Sí" : item.Descripcion;
     }
+
+    private static string TextoONo(string? valor) =>
+        string.IsNullOrWhiteSpace(valor) ? "No" : valor;
 }
