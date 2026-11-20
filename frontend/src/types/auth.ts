@@ -8,6 +8,7 @@ export interface LoginResponse {
   nombreCompleto: string
   correo: string
   rol: 'Docente' | 'Admin'
+  esAuxiliar: boolean
   expiraEn: string
 }
 

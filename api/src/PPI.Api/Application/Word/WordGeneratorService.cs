@@ -175,7 +175,12 @@ public class WordGeneratorService : IWordGeneratorService
             var enlaces = entradas
                 .Where(e => e.GrupoAsignado?.Practica == practica
                          && !string.IsNullOrWhiteSpace(e.EnlaceEvidencias))
-                .Select(e => e.EnlaceEvidencias!)
+                .Select(e =>
+                {
+                    var nombre = e.GrupoAsignado?.Docente?.NombreCompleto ?? "Docente";
+                    var grupo = e.GrupoAsignado?.NumeroGrupo;
+                    return $"{nombre} (Grupo {grupo}): {e.EnlaceEvidencias}";
+                })
                 .ToList();
 
             var valor = string.Join("\n", enlaces);

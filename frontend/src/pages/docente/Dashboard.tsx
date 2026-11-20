@@ -55,7 +55,7 @@ export function Dashboard() {
 
   const handleAccion = (g: GrupoConEntradaDto) => {
     if (!g.entradaId) return
-    if (g.estado === 'Enviado') {
+    if (g.rol === 'AUXILIAR' || g.estado === 'Enviado') {
       navigate(`/docente/entradas/${g.entradaId}/ver`)
     } else {
       navigate(`/docente/entradas/${g.entradaId}`)
@@ -74,6 +74,7 @@ export function Dashboard() {
   }
 
   const accionLabel = (g: GrupoConEntradaDto) => {
+    if (g.rol === 'AUXILIAR') return 'Ver →'
     if (g.estado === 'Enviado') return 'Ver →'
     if (g.estado === 'Borrador') return 'Continuar →'
     if (g.estado === 'Devuelto') return 'Corregir →'
@@ -134,6 +135,7 @@ export function Dashboard() {
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Programa</th>
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Grupo</th>
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Matriculados</th>
+                <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Rol</th>
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Estado</th>
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Actualizado</th>
                 <th className="px-6 py-3 text-left text-label-caps text-on-surface-variant uppercase">Acción</th>
@@ -146,6 +148,13 @@ export function Dashboard() {
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">{g.programa || '—'}</td>
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">Grupo {g.numeroGrupo}</td>
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">{g.matriculados}</td>
+                  <td className="px-6 py-4 text-body-sm text-on-surface-variant">
+                    {g.rol === 'AUXILIAR' ? (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container">Auxiliar</span>
+                    ) : (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container">Principal</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4">
                     <Badge estado={g.estado} />
                   </td>
@@ -160,7 +169,7 @@ export function Dashboard() {
                         onClick={() => handleAccion(g)}
                         disabled={!g.entradaId}
                         className={`px-3 py-1.5 text-label-caps font-semibold rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed ${
-                          g.estado === 'Enviado'
+                          g.rol === 'AUXILIAR' || g.estado === 'Enviado'
                             ? 'border border-outline-variant text-on-surface-variant hover:bg-surface-container'
                             : 'bg-primary text-on-primary hover:bg-primary-container'
                         }`}
@@ -183,7 +192,7 @@ export function Dashboard() {
               ))}
               {grupos.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center text-on-surface-variant text-body-sm">
+                  <td colSpan={8} className="px-6 py-10 text-center text-on-surface-variant text-body-sm">
                     No tienes grupos asignados este semestre.
                   </td>
                 </tr>

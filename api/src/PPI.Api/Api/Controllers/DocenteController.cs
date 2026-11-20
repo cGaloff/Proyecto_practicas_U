@@ -17,12 +17,6 @@ namespace PPI.Api.Api.Controllers;
 [Produces("application/json")]
 public class DocenteController(AppDbContext db) : ControllerBase
 {
-    // ── GET /api/docente/grupos ────────────────────────────────
-    /// <summary>
-    /// Retorna todos los grupos del docente autenticado con el
-    /// estado actual de cada EntradaInforme.
-    /// Un docente con N grupos recibe N entradas en la respuesta.
-    /// </summary>
     [HttpGet("grupos")]
     [ProducesResponseType(typeof(List<GrupoConEntradaDto>), 200)]
     public async Task<IActionResult> GetGrupos()
@@ -30,34 +24,67 @@ public class DocenteController(AppDbContext db) : ControllerBase
         var docenteId = GetDocenteId();
         if (docenteId == null) return Unauthorized();
 
-        var grupos = await db.GruposAsignados
+        var misGrupos = await db.GruposAsignados
             .Include(g => g.EntradaInforme)
             .Include(g => g.Programa)
             .Where(g => g.DocenteId == docenteId)
             .OrderBy(g => g.Practica)
             .ThenBy(g => g.NumeroGrupo)
-            .Select(g => new GrupoConEntradaDto
-            {
-                EntradaId        = g.EntradaInforme!.Id,
-                Practica         = g.Practica,
-                NumeroGrupo      = g.NumeroGrupo,
-                Matriculados     = g.Matriculados,
-                Estado           = g.EntradaInforme.Estado.ToString(),
-                Programa         = g.Programa.Nombre,
-                GuardadoEn       = g.EntradaInforme.GuardadoEn,
-                EnviadoEn        = g.EntradaInforme.EnviadoEn,
-                ObservacionAdmin = g.EntradaInforme.ObservacionAdmin
-            })
             .ToListAsync();
 
-        return Ok(grupos);
+        var resultado = new List<GrupoConEntradaDto>();
+
+        foreach (var g in misGrupos)
+        {
+            if (g.Rol == "PRINCIPAL")
+            {
+                resultado.Add(new GrupoConEntradaDto
+                {
+                    EntradaId        = g.EntradaInforme?.Id ?? Guid.Empty,
+                    Practica         = g.Practica,
+                    NumeroGrupo      = g.NumeroGrupo,
+                    Matriculados     = g.Matriculados,
+                    Estado           = g.EntradaInforme?.Estado.ToString() ?? "SinIniciar",
+                    Programa         = g.Programa.Nombre,
+                    Rol              = "PRINCIPAL",
+                    GuardadoEn       = g.EntradaInforme?.GuardadoEn,
+                    EnviadoEn        = g.EntradaInforme?.EnviadoEn,
+                    ObservacionAdmin = g.EntradaInforme?.ObservacionAdmin
+                });
+            }
+            else
+            {
+                var principalGrupo = await db.GruposAsignados
+                    .Include(pg => pg.EntradaInforme)
+                    .Include(pg => pg.Docente)
+                    .FirstOrDefaultAsync(pg =>
+                        pg.ProgramaId == g.ProgramaId &&
+                        pg.Practica == g.Practica &&
+                        pg.NumeroGrupo == g.NumeroGrupo &&
+                        pg.Semestre == g.Semestre &&
+                        pg.Anio == g.Anio &&
+                        pg.Rol == "PRINCIPAL");
+
+                resultado.Add(new GrupoConEntradaDto
+                {
+                    EntradaId        = principalGrupo?.EntradaInforme?.Id ?? Guid.Empty,
+                    Practica         = g.Practica,
+                    NumeroGrupo      = g.NumeroGrupo,
+                    Matriculados     = g.Matriculados,
+                    Estado           = principalGrupo?.EntradaInforme?.Estado.ToString() ?? "SinIniciar",
+                    Programa         = g.Programa.Nombre,
+                    Rol              = "AUXILIAR",
+                    DocenteTitular   = principalGrupo?.Docente?.NombreCompleto,
+                    GuardadoEn       = principalGrupo?.EntradaInforme?.GuardadoEn,
+                    EnviadoEn        = principalGrupo?.EntradaInforme?.EnviadoEn,
+                    ObservacionAdmin = principalGrupo?.EntradaInforme?.ObservacionAdmin
+                });
+            }
+        }
+
+        return Ok(resultado);
     }
 
-    // ── GET /api/docente/entradas/{id} ────────────────────────
-    /// <summary>
-    /// Retorna el detalle completo de una entrada.
-    /// Valida que la entrada pertenezca al docente autenticado.
-    /// </summary>
     [HttpGet("entradas/{id:guid}")]
     [ProducesResponseType(typeof(EntradaDetalleDto), 200)]
     [ProducesResponseType(403)]
@@ -82,25 +109,20 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 Mensaje = "Entrada no encontrada."
             });
 
-        if (entrada.GrupoAsignado.DocenteId != docenteId)
-            return StatusCode(403, new MensajeResponse
-            {
-                Exitoso = false,
-                Mensaje = "No tienes permiso para acceder a esta entrada."
-            });
+        if (entrada.GrupoAsignado.DocenteId == docenteId)
+            return Ok(MapToDetalle(entrada));
 
-        return Ok(MapToDetalle(entrada));
+        var esAuxiliar = await EsAuxiliarDelGrupo(docenteId.Value, entrada.GrupoAsignado);
+        if (esAuxiliar)
+            return Ok(MapToDetalle(entrada));
+
+        return StatusCode(403, new MensajeResponse
+        {
+            Exitoso = false,
+            Mensaje = "No tienes permiso para acceder a esta entrada."
+        });
     }
 
-    // ── PUT /api/docente/entradas/{id} ────────────────────────
-    /// <summary>
-    /// Guarda borrador de una entrada.
-    /// Permitido en estados: SinIniciar, Borrador, Devuelto.
-    /// Rechaza con 409 si el estado es Enviado.
-    /// No valida suma 2B aquí — eso se valida al enviar.
-    /// Cada sección es opcional: solo se actualizan las que vienen
-    /// en el request. Las secciones null no se modifican.
-    /// </summary>
     [HttpPut("entradas/{id:guid}")]
     [ProducesResponseType(typeof(EntradaDetalleDto), 200)]
     [ProducesResponseType(400)]
@@ -132,11 +154,21 @@ public class DocenteController(AppDbContext db) : ControllerBase
             });
 
         if (entrada.GrupoAsignado.DocenteId != docenteId)
+        {
+            var esAux = await EsAuxiliarDelGrupo(docenteId.Value, entrada.GrupoAsignado);
+            if (esAux)
+                return StatusCode(403, new MensajeResponse
+                {
+                    Exitoso = false,
+                    Mensaje = "Como docente auxiliar solo puedes visualizar esta entrada."
+                });
+
             return StatusCode(403, new MensajeResponse
             {
                 Exitoso = false,
                 Mensaje = "No tienes permiso para editar esta entrada."
             });
+        }
 
         if (entrada.Estado == EstadoEntrada.Enviado)
             return Conflict(new MensajeResponse
@@ -145,7 +177,6 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 Mensaje = "Esta entrada ya fue enviada y no puede modificarse."
             });
 
-        // Actualizar solo las secciones presentes en el request
         if (req.Seccion2B != null)
             entrada.Seccion2B = new Seccion2B
             {
@@ -212,7 +243,6 @@ public class DocenteController(AppDbContext db) : ControllerBase
         if (req.EnlaceEvidencias != null)
             entrada.EnlaceEvidencias = req.EnlaceEvidencias;
 
-        // Primer guardado: SinIniciar → Borrador
         if (entrada.Estado == EstadoEntrada.SinIniciar)
             entrada.Estado = EstadoEntrada.Borrador;
 
@@ -222,14 +252,6 @@ public class DocenteController(AppDbContext db) : ControllerBase
         return Ok(MapToDetalle(entrada));
     }
 
-    // ── POST /api/docente/entradas/{id}/enviar ────────────────
-    /// <summary>
-    /// Envía una entrada. Valida:
-    /// - Estado debe ser Borrador o Devuelto
-    /// - Sección 2B es obligatoria
-    /// - Suma de sección 2B debe igualar matriculados del grupo
-    /// Genera firma digital y recalcula el estado del informe padre.
-    /// </summary>
     [HttpPost("entradas/{id:guid}/enviar")]
     [ProducesResponseType(typeof(MensajeResponse), 200)]
     [ProducesResponseType(400)]
@@ -239,10 +261,6 @@ public class DocenteController(AppDbContext db) : ControllerBase
     {
         var docenteId = GetDocenteId();
         if (docenteId == null) return Unauthorized();
-
-        var correo = User.FindFirstValue(ClaimTypes.Email)
-            ?? User.FindFirstValue("email")
-            ?? string.Empty;
 
         var entrada = await db.EntradasInforme
             .Include(e => e.GrupoAsignado)
@@ -256,11 +274,21 @@ public class DocenteController(AppDbContext db) : ControllerBase
             });
 
         if (entrada.GrupoAsignado.DocenteId != docenteId)
+        {
+            var esAux = await EsAuxiliarDelGrupo(docenteId.Value, entrada.GrupoAsignado);
+            if (esAux)
+                return StatusCode(403, new MensajeResponse
+                {
+                    Exitoso = false,
+                    Mensaje = "Como docente auxiliar no puedes enviar esta entrada."
+                });
+
             return StatusCode(403, new MensajeResponse
             {
                 Exitoso = false,
                 Mensaje = "No tienes permiso para enviar esta entrada."
             });
+        }
 
         if (entrada.Estado == EstadoEntrada.Enviado)
             return Conflict(new MensajeResponse
@@ -276,7 +304,6 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 Mensaje = "Debes completar al menos la sección 2B antes de enviar."
             });
 
-        // Sección 2B obligatoria
         if (entrada.Seccion2B == null)
             return BadRequest(new MensajeResponse
             {
@@ -284,7 +311,10 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 Mensaje = "La sección 2B (distribución por modalidad) es obligatoria."
             });
 
-        // Todo válido — marcar como enviado
+        var correo = User.FindFirstValue(ClaimTypes.Email)
+            ?? User.FindFirstValue("email")
+            ?? string.Empty;
+
         entrada.Estado       = EstadoEntrada.Enviado;
         entrada.EnviadoEn    = DateTime.UtcNow;
         entrada.GuardadoEn   = DateTime.UtcNow;
@@ -294,9 +324,7 @@ public class DocenteController(AppDbContext db) : ControllerBase
                                $"{horaBogota:dd/MM/yyyy} {horaBogota:hh:mm} {ampm} " +
                                $"por {correo}";
 
-        // Recalcular el estado del informe consolidado del programa
         await RecalcularEstadoInformeAsync(entrada.InformeId);
-
         await db.SaveChangesAsync();
 
         return Ok(new MensajeResponse
@@ -307,12 +335,6 @@ public class DocenteController(AppDbContext db) : ControllerBase
         });
     }
 
-    // ── GET /api/docente/entradas/{id}/descargar ──────────────
-    /// <summary>
-    /// Genera y descarga el .docx del informe individual del docente.
-    /// Solo contiene las filas de ese grupo específico.
-    /// Solo accesible si la entrada está en estado Enviado.
-    /// </summary>
     [HttpGet("entradas/{id:guid}/descargar")]
     [ProducesResponseType(typeof(FileContentResult), 200)]
     [ProducesResponseType(403)]
@@ -342,7 +364,11 @@ public class DocenteController(AppDbContext db) : ControllerBase
                 Mensaje = "Entrada no encontrada."
             });
 
-        if (entrada.GrupoAsignado.DocenteId != docenteId)
+        var esPrincipal = entrada.GrupoAsignado.DocenteId == docenteId;
+        var esAuxiliar = !esPrincipal &&
+            await EsAuxiliarDelGrupo(docenteId.Value, entrada.GrupoAsignado);
+
+        if (!esPrincipal && !esAuxiliar)
             return StatusCode(403, new MensajeResponse
             {
                 Exitoso = false,
@@ -381,6 +407,18 @@ public class DocenteController(AppDbContext db) : ControllerBase
         var claim = User.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? User.FindFirstValue("sub");
         return Guid.TryParse(claim, out var id) ? id : null;
+    }
+
+    private async Task<bool> EsAuxiliarDelGrupo(Guid docenteId, GrupoAsignado grupoPrincipal)
+    {
+        return await db.GruposAsignados.AnyAsync(g =>
+            g.DocenteId == docenteId &&
+            g.ProgramaId == grupoPrincipal.ProgramaId &&
+            g.Practica == grupoPrincipal.Practica &&
+            g.NumeroGrupo == grupoPrincipal.NumeroGrupo &&
+            g.Semestre == grupoPrincipal.Semestre &&
+            g.Anio == grupoPrincipal.Anio &&
+            g.Rol == "AUXILIAR");
     }
 
     private static EntradaDetalleDto MapToDetalle(EntradaInforme e) => new()

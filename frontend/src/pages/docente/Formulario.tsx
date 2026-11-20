@@ -49,6 +49,13 @@ export default function Formulario() {
     }
   }, [entrada, navigate])
 
+  useEffect(() => {
+    const grupo = grupos.find((g) => g.entradaId === entradaId)
+    if (grupo && grupo.rol === 'AUXILIAR') {
+      navigate(`/docente/entradas/${entradaId}/ver`, { replace: true })
+    }
+  }, [grupos, entradaId, navigate])
+
   const irASiguiente = async (data: GuardarBorradorRequest) => {
     await guardar(data)
     setSeccionesCompletadas((prev) => new Set([...prev, seccionActiva]))

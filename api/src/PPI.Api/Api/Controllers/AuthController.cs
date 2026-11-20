@@ -55,6 +55,7 @@ public class AuthController(
                 Correo = docente.Correo,
                 Rol = "Docente",
                 PrimerLogin = docente.PrimerLogin,
+                EsAuxiliar = docente.EsAuxiliar,
                 ExpiraEn = DateTime.UtcNow.AddMinutes(480)
             });
         }

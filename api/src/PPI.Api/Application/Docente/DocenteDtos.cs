@@ -10,6 +10,8 @@ public class GrupoConEntradaDto
     public int Matriculados { get; set; }
     public string Estado { get; set; } = string.Empty;
     public string Programa { get; set; } = string.Empty;
+    public string Rol { get; set; } = "PRINCIPAL";
+    public string? DocenteTitular { get; set; }
     public DateTime? GuardadoEn { get; set; }
     public DateTime? EnviadoEn { get; set; }
     public string? ObservacionAdmin { get; set; }

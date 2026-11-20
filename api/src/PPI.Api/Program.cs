@@ -104,8 +104,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var passwordService = scope.ServiceProvider.GetRequiredService<IPasswordService>();
     db.Database.Migrate();
-    await DatabaseSeeder.SeedAsync(db);
+    await DatabaseSeeder.SeedAsync(db, passwordService);
 }
 
 if (app.Environment.IsDevelopment())

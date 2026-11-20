@@ -20,6 +20,7 @@ public class LoginResponse
     public string Correo { get; set; } = string.Empty;
     public string Rol { get; set; } = string.Empty;
     public bool PrimerLogin { get; set; }
+    public bool EsAuxiliar { get; set; }
     public DateTime ExpiraEn { get; set; }
 }
 

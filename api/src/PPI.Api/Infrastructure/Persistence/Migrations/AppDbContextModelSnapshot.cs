@@ -212,6 +212,14 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("programa_id");
 
+                    b.Property<string>("Rol")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("PRINCIPAL")
+                        .HasColumnName("rol");
+
                     b.Property<string>("Semestre")
                         .IsRequired()
                         .HasMaxLength(10)

@@ -14,6 +14,7 @@ public class GrupoAsignadoConfiguration : IEntityTypeConfiguration<GrupoAsignado
         b.Property(x => x.Practica).IsRequired().HasMaxLength(10);
         b.Property(x => x.NumeroGrupo).IsRequired();
         b.Property(x => x.Matriculados).IsRequired();
+        b.Property(x => x.Rol).IsRequired().HasMaxLength(20).HasDefaultValue("PRINCIPAL");
         b.Property(x => x.Semestre).IsRequired().HasMaxLength(10);
         b.Property(x => x.Anio).IsRequired();
 

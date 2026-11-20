@@ -98,6 +98,7 @@ namespace PPI.Api.Infrastructure.Persistence.Migrations
                     practica = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     numero_grupo = table.Column<int>(type: "integer", nullable: false),
                     matriculados = table.Column<int>(type: "integer", nullable: false),
+                    rol = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false, defaultValue: "PRINCIPAL"),
                     semestre = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     anio = table.Column<int>(type: "integer", nullable: false)
                 },

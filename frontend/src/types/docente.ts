@@ -7,6 +7,8 @@ export interface GrupoConEntradaDto {
   matriculados: number
   estado: EstadoEntrada
   programa: string
+  rol: 'PRINCIPAL' | 'AUXILIAR'
+  docenteTitular?: string | null
   guardadoEn: string | null
   enviadoEn: string | null
   observacionAdmin: string | null

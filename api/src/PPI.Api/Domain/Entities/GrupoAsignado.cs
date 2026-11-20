@@ -16,6 +16,9 @@ public class GrupoAsignado
     public int NumeroGrupo { get; set; }
     public int Matriculados { get; set; }
 
+    /// <summary>PRINCIPAL o AUXILIAR</summary>
+    public string Rol { get; set; } = "PRINCIPAL";
+
     /// <summary>Formato: "2026-I"</summary>
     public string Semestre { get; set; } = string.Empty;
     public int Anio { get; set; }
