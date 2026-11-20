@@ -107,38 +107,25 @@ export default function EntradaEnviada() {
         </button>
       </div>
 
-      {/* Header card */}
-      <div className="bg-white border border-outline-variant rounded-xl p-8 shadow-sm">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-headline-md text-on-surface font-bold mb-1">
-              Informe de Práctica Pedagógica
-            </h1>
-            <p className="text-body-sm text-on-surface-variant">
-              {entrada.practica} · Grupo {entrada.numeroGrupo}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-1.5">
-            <CheckCircle size={14} className="text-green-600" />
-            <span className="text-[12px] font-bold text-green-700 uppercase tracking-wide">Enviado</span>
+      {/* Header */}
+      <div className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
+          <h1 className="text-headline-sm text-on-surface font-bold">
+            Informe de Práctica Pedagógica
+          </h1>
+          <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-3 py-1">
+            <CheckCircle size={13} className="text-green-600" />
+            <span className="text-[11px] font-bold text-green-700 uppercase tracking-wide">Enviado</span>
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3">
           <InfoRow label="Práctica" value={entrada.practica} />
-          <InfoRow label="Grupo" value={`Grupo ${entrada.numeroGrupo}`} />
+          <InfoRow label="Grupo" value={entrada.numeroGrupo} />
           <InfoRow label="Matriculados" value={entrada.matriculados} />
           {entrada.docenteNombre && <InfoRow label="Docente" value={entrada.docenteNombre} />}
           {entrada.programa && <InfoRow label="Programa" value={entrada.programa} />}
           {entrada.semestre && <InfoRow label="Semestre" value={entrada.semestre} />}
-          {entrada.enviadoEn && (
-            <InfoRow
-              label="Enviado el"
-              value={new Date(entrada.enviadoEn).toLocaleDateString('es-CO', {
-                day: '2-digit', month: 'long', year: 'numeric',
-              })}
-            />
-          )}
         </div>
       </div>
 

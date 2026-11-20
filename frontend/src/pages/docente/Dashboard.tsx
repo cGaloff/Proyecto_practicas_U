@@ -148,15 +148,19 @@ export function Dashboard() {
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">{g.programa || '—'}</td>
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">Grupo {g.numeroGrupo}</td>
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">{g.matriculados}</td>
-                  <td className="px-6 py-4 text-body-sm text-on-surface-variant">
+                  <td className="px-6 py-4 text-body-sm">
                     {g.rol === 'AUXILIAR' ? (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container">Auxiliar</span>
+                      <span className="text-xs font-medium text-on-surface-variant">Auxiliar</span>
                     ) : (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container">Principal</span>
+                      <span className="text-xs font-medium text-primary">Principal</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <Badge estado={g.estado} />
+                    {g.rol === 'AUXILIAR' ? (
+                      <span className="text-xs text-on-surface-variant italic">Solo lectura</span>
+                    ) : (
+                      <Badge estado={g.estado} />
+                    )}
                   </td>
                   <td className="px-6 py-4 text-body-sm text-on-surface-variant">
                     {g.guardadoEn
