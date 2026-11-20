@@ -37,7 +37,7 @@ export default function Formulario() {
   const [mostrarModalExito, setMostrarModalExito] = useState(false)
   const [gruposRestantes, setGruposRestantes] = useState<GrupoConEntradaDto[]>([])
 
-  const { entrada, loading, error, guardando, guardadoEn, guardar, guardarConDebounce } =
+  const { entrada, loading, error, guardadoEn, guardar, guardarConDebounce } =
     useEntrada(entradaId ?? '')
   const { grupos, refetch: refetchGrupos } = useGrupos()
 
