@@ -39,7 +39,7 @@ export default function ListaDocentes() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Por docente</h1>
           <p className="text-gray-500 text-sm mt-1">
-            {docentes.length} docentes registrados · Semestre 2026-I
+            {docentes.length} docentes registrados · Semestre 2026-II
           </p>
         </div>
 

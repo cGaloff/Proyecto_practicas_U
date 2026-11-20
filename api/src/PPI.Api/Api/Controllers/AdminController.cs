@@ -27,7 +27,7 @@ public class AdminController(AppDbContext db) : ControllerBase
     {
         var programas = await db.Informes
             .Include(i => i.Programa)
-            .Where(i => i.Semestre == "2026-I")
+            .Where(i => i.Semestre == "2026-II")
             .Select(i => new
             {
                 programaId   = i.ProgramaId,
@@ -62,7 +62,7 @@ public class AdminController(AppDbContext db) : ControllerBase
                 .ThenInclude(e => e.GrupoAsignado)
                     .ThenInclude(g => g.Docente)
             .FirstOrDefaultAsync(i =>
-                i.ProgramaId == id && i.Semestre == "2026-I");
+                i.ProgramaId == id && i.Semestre == "2026-II");
 
         if (informe == null)
             return NotFound(new MensajeResponse
@@ -178,7 +178,7 @@ public class AdminController(AppDbContext db) : ControllerBase
                 .ThenInclude(e => e.GrupoAsignado)
                     .ThenInclude(g => g.Programa)
             .FirstOrDefaultAsync(i =>
-                i.ProgramaId == id && i.Semestre == "2026-I");
+                i.ProgramaId == id && i.Semestre == "2026-II");
 
         if (informe == null)
             return NotFound(new MensajeResponse

@@ -73,7 +73,7 @@ export default function AdminDashboard() {
       const url = window.URL.createObjectURL(new Blob([blob as BlobPart]))
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `consolidado_${nombre.replace(/ /g, '_')}_2026-I.docx`)
+      link.setAttribute('download', `consolidado_${nombre.replace(/ /g, '_')}_2026-II.docx`)
       document.body.appendChild(link)
       link.click()
       link.remove()
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Panel de Administración</h1>
         <p className="text-gray-500 text-sm mt-1">
-          Semestre 2026-I · Facultad de Ciencias de la Educación
+          Semestre 2026-II · Facultad de Ciencias de la Educación
         </p>
       </div>
 
