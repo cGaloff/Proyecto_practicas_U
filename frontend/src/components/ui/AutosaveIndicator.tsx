@@ -3,7 +3,8 @@ interface Props {
   guardadoEn: Date | null
 }
 
-export function AutosaveIndicator({ guardando }: Props) {
+export function AutosaveIndicator({ guardando, guardadoEn }: Props) {
+  if (!guardando && guardadoEn === null) return <div />
   return (
     <div className="flex items-center gap-3">
       <span className={`w-2 h-2 rounded-full ${

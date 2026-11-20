@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { Eye } from 'lucide-react'
 import { FormularioLayout } from '../../components/layout/FormularioLayout'
 import { Seccion1Modalidades } from '../../components/forms/Seccion1Modalidades'
 import { Seccion2Situacion } from '../../components/forms/Seccion2Situacion'
@@ -24,6 +25,8 @@ const SECCIONES = [
   { id: 6, nombre: 'Anexos' },
 ]
 
+const noop = () => {}
+
 export default function Formulario() {
   const { entradaId } = useParams<{ entradaId: string }>()
   const navigate = useNavigate()
@@ -38,26 +41,27 @@ export default function Formulario() {
     useEntrada(entradaId ?? '')
   const { grupos, refetch: refetchGrupos } = useGrupos()
 
+  const grupoActual = grupos.find((g) => g.entradaId === entradaId)
+  const esAuxiliar = grupoActual?.rol === 'AUXILIAR'
+
   useEffect(() => {
     setSeccionActiva(1)
     setSeccionesCompletadas(new Set())
   }, [entradaId])
 
   useEffect(() => {
-    if (entrada?.estado === 'Enviado') {
+    if (entrada?.estado === 'Enviado' && !esAuxiliar) {
       navigate(`/docente/entradas/${entrada.id}/ver`, { replace: true })
     }
-  }, [entrada, navigate])
-
-  useEffect(() => {
-    const grupo = grupos.find((g) => g.entradaId === entradaId)
-    if (grupo && grupo.rol === 'AUXILIAR') {
-      navigate(`/docente/entradas/${entradaId}/ver`, { replace: true })
-    }
-  }, [grupos, entradaId, navigate])
+  }, [entrada, navigate, esAuxiliar])
 
   const irASiguiente = async (data: GuardarBorradorRequest) => {
     await guardar(data)
+    setSeccionesCompletadas((prev) => new Set([...prev, seccionActiva]))
+    setSeccionActiva((s) => s + 1)
+  }
+
+  const irASiguienteReadonly = (_data?: GuardarBorradorRequest) => {
     setSeccionesCompletadas((prev) => new Set([...prev, seccionActiva]))
     setSeccionActiva((s) => s + 1)
   }
@@ -70,7 +74,6 @@ export default function Formulario() {
     try {
       await enviarEntrada(entradaId ?? '')
 
-      // Actualiza el estado del hook para que el sidebar refleje el ✓ verde
       await refetchGrupos()
 
       const gruposActualizados = await getGrupos()
@@ -129,8 +132,23 @@ export default function Formulario() {
       onCambiarSeccion={setSeccionActiva}
       estadoEntrada={entrada.estado}
     >
-      <>
-        {esReenvio && entrada.observacionAdmin && (
+      <div className={esAuxiliar ? 'formulario-readonly' : ''}>
+        {esAuxiliar && (
+          <div className="px-8 pt-6 max-w-5xl mx-auto">
+            <div className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <Eye size={18} className="text-blue-600 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-blue-800">Modo solo lectura</p>
+                <p className="text-xs text-blue-600">
+                  Como docente auxiliar, puedes visualizar el informe del docente titular
+                  {grupoActual?.docenteTitular ? ` (${grupoActual.docenteTitular})` : ''} pero no modificarlo.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {esReenvio && entrada.observacionAdmin && !esAuxiliar && (
           <div className="px-8 pt-6 max-w-5xl mx-auto">
             <BannerDevuelto
               observacion={entrada.observacionAdmin}
@@ -143,20 +161,20 @@ export default function Formulario() {
         {seccionActiva === 1 && (
           <Seccion1Modalidades
             entrada={entradaConDatos}
-            guardando={guardando}
-            guardadoEn={guardadoEn}
-            onGuardar={guardarConDebounce}
-            onSiguiente={irASiguiente}
+            guardando={false}
+            guardadoEn={esAuxiliar ? null : guardadoEn}
+            onGuardar={esAuxiliar ? noop : guardarConDebounce}
+            onSiguiente={esAuxiliar ? irASiguienteReadonly : irASiguiente}
           />
         )}
 
         {seccionActiva === 2 && (
           <Seccion2Situacion
             entrada={entradaConDatos}
-            guardando={guardando}
-            guardadoEn={guardadoEn}
-            onGuardar={guardarConDebounce}
-            onSiguiente={irASiguiente}
+            guardando={false}
+            guardadoEn={esAuxiliar ? null : guardadoEn}
+            onGuardar={esAuxiliar ? noop : guardarConDebounce}
+            onSiguiente={esAuxiliar ? irASiguienteReadonly : irASiguiente}
             onAnterior={irAAnterior}
           />
         )}
@@ -164,10 +182,10 @@ export default function Formulario() {
         {seccionActiva === 3 && (
           <Seccion3Actividades
             entrada={entradaConDatos}
-            guardando={guardando}
-            guardadoEn={guardadoEn}
-            onGuardar={guardarConDebounce}
-            onSiguiente={irASiguiente}
+            guardando={false}
+            guardadoEn={esAuxiliar ? null : guardadoEn}
+            onGuardar={esAuxiliar ? noop : guardarConDebounce}
+            onSiguiente={esAuxiliar ? irASiguienteReadonly : irASiguiente}
             onAnterior={irAAnterior}
           />
         )}
@@ -175,10 +193,10 @@ export default function Formulario() {
         {seccionActiva === 4 && (
           <Seccion4Resultados
             entrada={entradaConDatos}
-            guardando={guardando}
-            guardadoEn={guardadoEn}
-            onGuardar={guardarConDebounce}
-            onSiguiente={irASiguiente}
+            guardando={false}
+            guardadoEn={esAuxiliar ? null : guardadoEn}
+            onGuardar={esAuxiliar ? noop : guardarConDebounce}
+            onSiguiente={esAuxiliar ? irASiguienteReadonly : irASiguiente}
             onAnterior={irAAnterior}
           />
         )}
@@ -186,10 +204,10 @@ export default function Formulario() {
         {seccionActiva === 5 && (
           <Seccion5Observaciones
             entrada={entradaConDatos}
-            guardando={guardando}
-            guardadoEn={guardadoEn}
-            onGuardar={guardarConDebounce}
-            onSiguiente={irASiguiente}
+            guardando={false}
+            guardadoEn={esAuxiliar ? null : guardadoEn}
+            onGuardar={esAuxiliar ? noop : guardarConDebounce}
+            onSiguiente={esAuxiliar ? irASiguienteReadonly : irASiguiente}
             onAnterior={irAAnterior}
           />
         )}
@@ -197,15 +215,16 @@ export default function Formulario() {
         {seccionActiva === 6 && (
           <Seccion6Anexos
             entrada={entradaConDatos}
-            guardando={guardando}
-            guardadoEn={guardadoEn}
-            onGuardar={guardarConDebounce}
+            guardando={false}
+            guardadoEn={esAuxiliar ? null : guardadoEn}
+            onGuardar={esAuxiliar ? noop : guardarConDebounce}
             onAnterior={irAAnterior}
-            onEnviar={handleEnviar}
+            onEnviar={esAuxiliar ? (async () => {}) : handleEnviar}
             esReenvio={esReenvio}
+            soloLectura={esAuxiliar}
           />
         )}
-      </>
+      </div>
     </FormularioLayout>
 
     {mostrarModalExito && entrada && (

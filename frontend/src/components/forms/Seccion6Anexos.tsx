@@ -12,10 +12,11 @@ interface Props {
   onAnterior: () => void
   onEnviar: () => Promise<void>
   esReenvio?: boolean
+  soloLectura?: boolean
 }
 
 export function Seccion6Anexos({
-  entrada, guardando, guardadoEn, onGuardar, onAnterior, onEnviar, esReenvio = false,
+  entrada, guardando, guardadoEn, onGuardar, onAnterior, onEnviar, esReenvio = false, soloLectura = false,
 }: Props) {
   const [enlace, setEnlace] = useState(entrada.enlaceEvidencias ?? '')
   const enlaceValido = enlace.trim().length > 0
@@ -127,21 +128,25 @@ export function Seccion6Anexos({
               <ArrowLeft size={18} />
               Anterior
             </button>
-            <button
-              onClick={handleGuardarBorrador}
-              className="flex items-center gap-2 px-8 py-3 border-2 border-primary-container text-primary-container font-bold text-body-md rounded-lg hover:bg-primary-container/10 transition-all"
-            >
-              Guardar borrador
-            </button>
-            <button
-              onClick={() => setMostrarModal(true)}
-              disabled={!enlaceValido}
-              title={!enlaceValido ? 'Debes ingresar el enlace de evidencias antes de enviar' : undefined}
-              className="flex items-center gap-2 px-10 py-3 bg-primary-container text-on-primary font-bold text-body-md rounded-lg hover:bg-primary transition-all shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {esReenvio ? 'Reenviar informe' : 'Enviar informe'}
-              <Send size={16} />
-            </button>
+            {!soloLectura && (
+              <>
+                <button
+                  onClick={handleGuardarBorrador}
+                  className="flex items-center gap-2 px-8 py-3 border-2 border-primary-container text-primary-container font-bold text-body-md rounded-lg hover:bg-primary-container/10 transition-all"
+                >
+                  Guardar borrador
+                </button>
+                <button
+                  onClick={() => setMostrarModal(true)}
+                  disabled={!enlaceValido}
+                  title={!enlaceValido ? 'Debes ingresar el enlace de evidencias antes de enviar' : undefined}
+                  className="flex items-center gap-2 px-10 py-3 bg-primary-container text-on-primary font-bold text-body-md rounded-lg hover:bg-primary transition-all shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {esReenvio ? 'Reenviar informe' : 'Enviar informe'}
+                  <Send size={16} />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
