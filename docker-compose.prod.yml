@@ -57,6 +57,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx/proxy.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./convenios:/usr/share/nginx/convenios:ro
       - certbot_www:/var/www/certbot:ro
       - certbot_certs:/etc/letsencrypt:ro
     depends_on:
